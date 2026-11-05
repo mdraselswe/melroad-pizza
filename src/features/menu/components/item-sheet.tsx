@@ -48,7 +48,7 @@ function ItemConfigurator({ item, onDone }: { item: MenuItem; onDone: () => void
       media={
         item.image ? (
           // eslint-disable-next-line @next/next/no-img-element -- static export
-          <img src={item.image} alt="" className="block aspect-[16/9] w-full object-cover" />
+          <img src={item.image} alt="" className="block aspect-[21/9] w-full object-cover" />
         ) : null
       }
       footer={

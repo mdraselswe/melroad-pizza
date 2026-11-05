@@ -37,7 +37,8 @@ const [meat, sauces] = kebab.options as [(typeof kebab.options)[number], (typeof
 describe("item options", () => {
   it("preselects required single choices", () => {
     expect(defaultSelections(kebab)).toEqual({ meat: ["lamb"], sauces: [] });
-    expect(canQuickAdd(kebab)).toBe(true);
+    expect(canQuickAdd(kebab)).toBe(false);
+    expect(canQuickAdd({ ...kebab, options: [] })).toBe(true);
   });
 
   it("acts like radios for single-choice groups", () => {

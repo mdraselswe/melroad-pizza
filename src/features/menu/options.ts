@@ -33,5 +33,5 @@ export function describeSelections(item: MenuItem, selections: OptionSelections)
   });
 }
 
-export const canQuickAdd = (item: MenuItem) =>
-  item.options.every((g) => g.min === 0 || (g.min === 1 && g.max === 1));
+/** Items without choices go straight to the cart; anything with options opens the sheet. */
+export const canQuickAdd = (item: MenuItem) => item.options.length === 0;
