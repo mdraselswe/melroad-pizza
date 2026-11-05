@@ -104,7 +104,7 @@ export const melroadConfig = {
     accentDark: "#ff5a1f",
   },
   seo: {
-    siteUrl: "https://melroad-pizza.vercel.app",
+    siteUrl: "https://pizza.shojashapta.com",
     title: "Melroad Pizza n Kebab · Newport VIC",
     description:
       "Order pizza, kebabs, parmas and burgers from Melroad Pizza n Kebab, 422 Melbourne Road, Newport. Open till 1:30am Fri & Sat. Pickup or delivery.",
