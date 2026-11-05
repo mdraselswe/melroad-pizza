@@ -1,5 +1,6 @@
 "use client";
 
+import { useInView } from "@/hooks/use-in-view";
 import { cn } from "@/lib/cn";
 import { pizzaImage, type PizzaArtSpec } from "../rasterize";
 import { useRaster } from "../use-raster";
@@ -8,17 +9,28 @@ interface PizzaImageProps {
   art: PizzaArtSpec;
   /** Rendered pixel size of the bitmap (not the CSS size). */
   px?: number;
+  /** Wait for the browser to be idle before painting. */
   idle?: boolean;
+  /** Paint only once scrolled near the viewport. */
+  lazy?: boolean;
   className?: string;
   alt?: string;
 }
 
 /** A finished pizza illustration that fades in once painted. */
-export function PizzaImage({ art, px = 480, idle = true, className, alt = "" }: PizzaImageProps) {
-  const key = `${art.id}:${art.sauce}:${art.toppings.join(",")}:${px}`;
-  const url = useRaster(key, () => pizzaImage(art, px), { idle });
+export function PizzaImage({
+  art,
+  px = 480,
+  idle = true,
+  lazy = true,
+  className,
+  alt = "",
+}: PizzaImageProps) {
+  const [ref, inView] = useInView<HTMLSpanElement>({ enabled: lazy });
+  const key = inView ? `${art.id}:${art.sauce}:${art.toppings.join(",")}:${px}` : null;
+  const url = useRaster(key, () => pizzaImage(art, px, { urgent: !idle }), { idle });
   return (
-    <span className={cn("relative block aspect-square", className)}>
+    <span ref={ref} className={cn("relative block aspect-square", className)}>
       <span
         aria-hidden="true"
         className={cn(

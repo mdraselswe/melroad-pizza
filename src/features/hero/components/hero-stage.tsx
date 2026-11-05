@@ -55,7 +55,7 @@ interface HeroStageProps {
 /** The glowing oven-mouth stage: rotating pizza, ring copy, embers, floating toppings, price tag. */
 export function HeroStage({ art, ringText, priceTag }: HeroStageProps) {
   const stageRef = useRef<HTMLDivElement>(null);
-  const pizzaUrl = useRaster(`hero:${art.id}`, () => pizzaImage(art, 1000));
+  const pizzaUrl = useRaster(`hero:${art.id}`, () => pizzaImage(art, 1000, { urgent: true }));
   useParallax(stageRef);
 
   const garnish = useMemo(() => {

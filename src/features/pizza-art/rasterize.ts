@@ -16,11 +16,26 @@ function svgDocument(viewBox: string, inner: string, px: number) {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" width="${px}" height="${px}"><defs>${PAINT_DEFS}</defs>${inner}</svg>`;
 }
 
-export function rasterize(key: string, viewBox: string, inner: string, px: number): Promise<string> {
-  const hit = cache.get(key);
-  if (hit) return hit;
-  const svgUrl = URL.createObjectURL(new Blob([svgDocument(viewBox, inner, px)], { type: "image/svg+xml" }));
-  const job = new Promise<string>((resolve) => {
+/**
+ * Painting a filtered SVG is CPU heavy, so jobs run one at a time with a
+ * yield between them: the page stays responsive and visible art (urgent
+ * jobs jump the queue) is painted first.
+ */
+const queue: (() => Promise<void>)[] = [];
+let draining = false;
+
+async function drain() {
+  if (draining) return;
+  draining = true;
+  while (queue.length) {
+    await queue.shift()!();
+    await new Promise((r) => setTimeout(r, 0));
+  }
+  draining = false;
+}
+
+function paint(svgUrl: string, px: number): Promise<string> {
+  return new Promise<string>((resolve) => {
     const img = new Image();
     img.onload = () => {
       try {
@@ -39,7 +54,29 @@ export function rasterize(key: string, viewBox: string, inner: string, px: numbe
     img.onerror = () => resolve(svgUrl);
     img.src = svgUrl;
   });
+}
+
+export function rasterize(
+  key: string,
+  viewBox: string,
+  inner: string,
+  px: number,
+  { urgent = false } = {},
+): Promise<string> {
+  const hit = cache.get(key);
+  if (hit) return hit;
+  const job = new Promise<string>((resolve) => {
+    const run = async () => {
+      const svgUrl = URL.createObjectURL(
+        new Blob([svgDocument(viewBox, inner, px)], { type: "image/svg+xml" }),
+      );
+      resolve(await paint(svgUrl, px));
+    };
+    if (urgent) queue.unshift(run);
+    else queue.push(run);
+  });
   cache.set(key, job);
+  void drain();
   return job;
 }
 
@@ -51,7 +88,7 @@ export interface PizzaArtSpec {
 }
 
 /** A finished pizza (no board), e.g. for the hero, cards and the cart. */
-export function pizzaImage(art: PizzaArtSpec, px: number): Promise<string> {
+export function pizzaImage(art: PizzaArtSpec, px: number, { urgent = false } = {}): Promise<string> {
   const pieces = piecesFor({ halves: [{ side: "F", id: art.id, toppings: art.toppings }] });
   const inner =
     baseMarkup({ sauce: art.sauce, cheese: art.cheese }) + piecesMarkup(pieces) + `<g>${HERBS_MARKUP}</g>`;
@@ -60,13 +97,14 @@ export function pizzaImage(art: PizzaArtSpec, px: number): Promise<string> {
     "-212 -212 424 424",
     inner,
     px,
+    { urgent },
   );
 }
 
 /** The builder's dough + sauce + cheese layer; toppings are drawn live on top. */
 export function baseImage(opts: { baseId: BaseId; sauce: SauceId; sauceRight?: SauceId; cheese?: boolean }) {
   const key = `base:${opts.baseId}:${opts.sauce}:${opts.sauceRight ?? ""}:${opts.cheese ?? true}`;
-  return rasterize(key, "-255 -255 510 510", baseMarkup(opts), 1080);
+  return rasterize(key, "-255 -255 510 510", baseMarkup(opts), 1080, { urgent: true });
 }
 
 /** One topping on its own, for floating hero garnish. */

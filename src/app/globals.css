@@ -60,6 +60,7 @@
     --solid: #17110e;
     --success: #4cc46e;
     --danger: #ff6b5b;
+    --map-filter: invert(0.9) hue-rotate(180deg) saturate(0.55) brightness(0.95);
     color-scheme: dark;
   }
 }
@@ -83,6 +84,7 @@
   --solid: #17110e;
   --success: #4cc46e;
   --danger: #ff6b5b;
+  --map-filter: invert(0.9) hue-rotate(180deg) saturate(0.55) brightness(0.95);
   color-scheme: dark;
 }
 
@@ -449,6 +451,25 @@
     border-color: var(--danger);
   }
 
+  .map-frame {
+    filter: var(--map-filter, none);
+  }
+
+  /* Loading placeholder: a soft sheen sweeping across a faint block. */
+  .skeleton {
+    position: relative;
+    overflow: hidden;
+    background: var(--faint);
+  }
+  .skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+    animation: skeleton-sweep 1.4s ease-in-out infinite;
+  }
+
   .reveal-pending {
     opacity: 0;
     transform: translateY(26px);
@@ -479,6 +500,11 @@
 @keyframes marquee {
   to {
     transform: translateX(-50%);
+  }
+}
+@keyframes skeleton-sweep {
+  to {
+    transform: translateX(100%);
   }
 }
 @keyframes rise {
