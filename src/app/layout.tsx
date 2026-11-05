@@ -35,6 +35,7 @@ export const metadata: Metadata = {
   },
   twitter: { card: "summary_large_image", title: tenant.seo.title, description: tenant.seo.description },
   formatDetection: { telephone: false },
+  icons: { icon: { url: "/icon.svg", type: "image/svg+xml" } },
 };
 
 export const viewport: Viewport = {

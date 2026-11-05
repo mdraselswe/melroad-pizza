@@ -71,6 +71,11 @@ export const TenantSchema = z.object({
   /** Index 0 = Sunday … 6 = Saturday. An empty array means closed all day. */
   hours: z.array(z.array(OpeningWindowSchema)).length(7),
   ordering: z.object({
+    /** Prefix for order references, e.g. "MR" gives "MR-7K2QX". */
+    referencePrefix: z
+      .string()
+      .regex(/^[A-Z]{1,4}$/)
+      .default("ORD"),
     slotMinutes: z.number().int().positive(),
     slotsAhead: z.number().int().positive(),
     halfAndHalfFee: cents,

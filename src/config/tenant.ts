@@ -1,6 +1,6 @@
 import { DEFAULT_TENANT, TENANTS, type TenantId } from "@/tenants";
 import { MenuSchema, type Menu } from "./menu-schema";
-import { TenantSchema, type Tenant } from "./schema";
+import { TenantSchema, type Tenant, type TenantContent } from "./schema";
 
 const isTenantId = (id: string): id is TenantId => id in TENANTS;
 
@@ -24,3 +24,6 @@ const loaded = loadTenant(resolveTenantId(process.env.NEXT_PUBLIC_TENANT));
 
 export const tenant: Tenant = loaded.tenant;
 export const menu: Menu = loaded.menu;
+
+/** Marketing copy in the default locale (the schema guarantees it exists). */
+export const content: TenantContent = tenant.content[tenant.locale.default]!;

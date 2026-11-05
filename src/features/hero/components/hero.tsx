@@ -1,6 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
-import { tenant } from "@/config/tenant";
+import { content, tenant } from "@/config/tenant";
 import { ROUTES } from "@/constants/routes";
 import { t } from "@/i18n";
 import { sizeLabel } from "@/lib/labels";
@@ -10,8 +10,6 @@ import { sizePrice } from "@/lib/pricing";
 import { BlurHeadline } from "./blur-headline";
 import { HeroStage } from "./hero-stage";
 import { OpenBadge } from "./open-badge";
-
-const content = tenant.content[tenant.locale.default]!;
 
 export function Hero() {
   const art = heroPizza ? artFor(heroPizza) : undefined;

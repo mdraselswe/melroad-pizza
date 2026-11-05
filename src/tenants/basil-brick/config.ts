@@ -35,6 +35,7 @@ export const basilBrickConfig = {
   ],
   ordering: {
     ...melroadConfig.ordering,
+    referencePrefix: "BB",
     delivery: {
       ...melroadConfig.ordering.delivery,
       fee: 700,

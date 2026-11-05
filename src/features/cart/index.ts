@@ -8,3 +8,4 @@ export { selectCount, selectSubtotal, useCartStore } from "./store";
 export { useToastStore } from "./toast-store";
 export type { CartLine, CartLineKind, NewCartLine } from "./types";
 export { useAddToCart } from "./use-add-to-cart";
+export { useCartHydrated } from "./use-cart-hydrated";

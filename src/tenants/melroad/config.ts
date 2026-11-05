@@ -46,6 +46,7 @@ export const melroadConfig = {
     [{ open: "16:00", close: "01:30" }],
   ],
   ordering: {
+    referencePrefix: "MR",
     slotMinutes: 15,
     slotsAhead: 24,
     halfAndHalfFee: 200, // DEMO
