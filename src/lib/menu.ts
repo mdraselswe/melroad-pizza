@@ -52,4 +52,14 @@ export function dealArt(deal: Deal, n = 5): MenuItem[] {
   return [...popular, ...rest].slice(0, n);
 }
 
+/** A photo for deals without pizzas (kebab or burger combos). */
+export function pickSlotImage(deal: Deal): string | undefined {
+  for (const slot of deal.slots) {
+    if (slot.kind !== "pick") continue;
+    const withImage = slotPool(slot).find((i) => i.image);
+    if (withImage) return withImage.image;
+  }
+  return undefined;
+}
+
 export const lowestPrice = (item: MenuItem) => Math.min(item.price, ...Object.values(item.sizePrices ?? {}));

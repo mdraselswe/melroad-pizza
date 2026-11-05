@@ -46,3 +46,6 @@ next-env.d.ts
 /test-results
 /blob-report
 /playwright/.cache
+
+# Raw photo sources (re-download via src/constants/credits.ts)
+/design/photos-src/

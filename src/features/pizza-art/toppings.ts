@@ -41,9 +41,9 @@ export const TOPPINGS: Record<string, Topping> = {
     return `<path d="${d}" fill="url(#gHam)"/><path d="${d}" fill="none" stroke="#fbd9d1" stroke-width="2.2" opacity=".75"/><path d="M-7 -2 Q0 -6 7 0" stroke="#f9d3ca" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".7"/>`;
   }),
   bacon: piece(9, 34, (r) => {
-    const w = 13 + r() * 4;
+    const w = 16 + r() * 4;
     const d = `M${f1(-w)} 0 q${f1(w / 3)} -7 ${f1((w * 2) / 3)} 0 t${f1((w * 2) / 3)} 0 t${f1((w * 2) / 3)} 0`;
-    return `<path d="${d}" stroke="#5e170c" stroke-width="10" fill="none" stroke-linecap="round"/><path d="${d}" stroke="#a5321e" stroke-width="8" fill="none" stroke-linecap="round"/><path d="${d}" stroke="#f6c3ae" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".85" transform="translate(0 -1.5)"/>`;
+    return `<path d="${d}" stroke="#5e170c" stroke-width="13" fill="none" stroke-linecap="round"/><path d="${d}" stroke="#a5321e" stroke-width="10.5" fill="none" stroke-linecap="round"/><path d="${d}" stroke="#f6c3ae" stroke-width="3" fill="none" stroke-linecap="round" opacity=".85" transform="translate(0 -1.5)"/>`;
   }),
   mushroom: piece(
     9,
@@ -129,7 +129,7 @@ export const TOPPINGS: Record<string, Topping> = {
     3,
     80,
     (r) =>
-      `<path d="${blob(r, 22, 0.28, 8)}" fill="#fffdf6"/><path d="${blob(r, 22, 0.1, 8)}" fill="none" stroke="#f0e2c0" stroke-width="2" opacity=".7"/><circle r="9" fill="url(#gYolk)"/>${glint(-3, -3.5, 3.4, 1.8, 0.75)}`,
+      `<path d="${blob(r, 27, 0.28, 8)}" fill="#fffdf6"/><path d="${blob(r, 27, 0.1, 8)}" fill="none" stroke="#f0e2c0" stroke-width="2" opacity=".7"/><circle r="11" fill="url(#gYolk)"/>${glint(-4, -4.5, 4, 2, 0.75)}`,
   ),
   prawn: piece(8, 36, (r) => {
     const flip = r() > 0.5 ? -1 : 1;
