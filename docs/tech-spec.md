@@ -36,7 +36,7 @@ src/
   hooks/               generic hooks (now, mounted, open status, theme, scroll spy, spotlight)
   i18n/                messages + typed `t()`
   lib/                 pure helpers: money, pricing, hours, slots, menu lookups, ids, storage, seo
-  services/            orders (demo: localStorage; swap for an API)
+  services/            orders and contact messages (demo: localStorage; swap for an API)
   tenants/<id>/        config.ts + menu.ts per restaurant
 tests/e2e/             Playwright specs
 ```
@@ -50,7 +50,14 @@ The ESLint rule `no-restricted-imports` blocks deep imports into another feature
 3. Prices are integer cents everywhere (`src/lib/pricing.ts`). The cart stores snapshots (name, details, unit price, art) so the cart and order history render without the menu.
 4. The cart persists to `localStorage` under `<tenant>:cart` with `skipHydration`. `CartHydrator` loads it after mount so server and client HTML match.
 5. Checkout validates with `checkoutSchema(delivery)`, builds the order through `createOrder`, clears the cart and routes to `/order/?id=…`.
-6. The tracker derives the stage from elapsed time (`orderStage`), so it needs no backend.
+6. The contact form validates with `contactSchema` and saves through `services/messages.ts` (demo: on this device).
+7. The tracker derives the stage from elapsed time (`orderStage`), so it needs no backend.
+
+## Loading and layout stability
+
+- Static routes are prefetched in full by `<Link>`, so navigation is normally instant.
+- `src/app/loading.tsx` is the fallback if a link is clicked before its page has arrived: a skeleton shaped like `PageShell` plus a card grid, so content replaces it without a jump.
+- Client-only parts (cart, clock, open status, map) reserve their space and show a `.skeleton` placeholder until ready. Layout shift is 0 on every page.
 
 ## Pizza art
 
@@ -76,8 +83,8 @@ Skip link, landmark structure, one `h1` per page, labelled radio groups and swit
 
 ## Testing
 
-- Unit tests sit next to the code (`*.test.ts`): pricing, hours, slots, tenant validation, i18n, builder reducer, deal picks, item options, menu search, checkout schema, order service, reward progress.
-- E2E (`tests/e2e`) runs on the production export in desktop Chrome and a Pixel 7 profile: browsing, search, 404, theme, builder, options sheet, deal configurator, checkout validation, placing and tracking an order.
+- Unit tests sit next to the code (`*.test.ts`): pricing, hours, slots, tenant validation, i18n, builder reducer, deal picks, item options, menu search, checkout schema, order service, contact messages, maps helper, reward progress.
+- E2E (`tests/e2e`) runs on the production export in desktop Chrome and a Pixel 7 profile: browsing, search, 404, theme, contact form, builder, options sheet, deal configurator, checkout validation, placing and tracking an order.
 - CI runs typecheck, lint, format check, unit tests, both tenant builds and e2e on every push.
 
 ## Out of scope for the demo

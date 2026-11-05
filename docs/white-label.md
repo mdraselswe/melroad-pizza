@@ -9,20 +9,20 @@ Everything that changes between restaurants lives in one folder: `src/tenants/<i
    cp -r src/tenants/melroad src/tenants/my-client
    ```
 2. Edit `src/tenants/my-client/config.ts`:
-   | Field      | What it controls                                                                                                                           |
-   | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-   | `id`       | Unique id; also namespaces localStorage keys                                                                                               |
-   | `brand`    | Name in the header, full name in titles, tagline                                                                                           |
-   | `contact`  | Phone (display + E.164), address, Google Maps link, socials                                                                                |
-   | `locale`   | Number locale, currency, time zone (opening hours use it)                                                                                  |
-   | `hours`    | 7 arrays, **Sunday first**, of `{ open, close }` in `HH:MM`. A close earlier than open runs past midnight (`16:00`→`01:30`)                |
-   | `ordering` | Order reference prefix, slot length, prep times, half & half fee, delivery fee, free-delivery threshold, minimum order, delivery postcodes |
-   | `pizza`    | Sizes (inches + visual scale), crusts (+ price), extra toppings (+ price and art)                                                          |
-   | `loyalty`  | Turn rewards on/off, points per dollar, reward threshold and value. Off hides the Rewards link                                             |
-   | `theme`    | Three gradient colours and the accent for light and dark mode                                                                              |
-   | `seo`      | Site URL, title, description, keywords                                                                                                     |
-   | `demo`     | Shows the "demo" notices                                                                                                                   |
-   | `content`  | Hero headline (`[word]` is styled as the accent), hero text, ring text, stats, About section                                               |
+   | Field      | What it controls                                                                                                                                                     |
+   | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+   | `id`       | Unique id; also namespaces localStorage keys                                                                                                                         |
+   | `brand`    | Name in the header, full name in titles, tagline                                                                                                                     |
+   | `contact`  | Phone (display + E.164), address, Google Maps link, optional `mapEmbedUrl`, socials (`kind`: facebook, instagram, tiktok, x, youtube, website), `contactForm` on/off |
+   | `locale`   | Number locale, currency, time zone (opening hours use it)                                                                                                            |
+   | `hours`    | 7 arrays, **Sunday first**, of `{ open, close }` in `HH:MM`. A close earlier than open runs past midnight (`16:00`→`01:30`)                                          |
+   | `ordering` | Order reference prefix, slot length, prep times, half & half fee, delivery fee, free-delivery threshold, minimum order, delivery postcodes                           |
+   | `pizza`    | Sizes (inches + visual scale), crusts (+ price), extra toppings (+ price and art)                                                                                    |
+   | `loyalty`  | Turn rewards on/off, points per dollar, reward threshold and value. Off hides the Rewards link                                                                       |
+   | `theme`    | Three gradient colours and the accent for light and dark mode                                                                                                        |
+   | `seo`      | Site URL, title, description, keywords                                                                                                                               |
+   | `demo`     | Shows the "demo" notices                                                                                                                                             |
+   | `content`  | Hero headline (`[word]` is styled as the accent), hero text, ring text, stats, About section                                                                         |
 3. Edit `menu.ts`: categories, items (pizzas need `art` so they can be drawn), option groups, tags and deals. Deal slots say which categories or items each pick comes from.
 4. Register it in `src/tenants/index.ts`:
    ```ts
