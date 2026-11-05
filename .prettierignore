@@ -1,0 +1,10 @@
+.next
+out
+node_modules
+coverage
+playwright-report
+test-results
+package-lock.json
+design/prototypes
+public
+AGENTS.md

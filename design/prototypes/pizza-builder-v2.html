@@ -1,0 +1,897 @@
+<title>Melroad Pizza Builder v2</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Lilita+One&display=swap">
+<style>
+/* Layout: vintage pizzeria signage — saffron by day, basil-green by night.
+   Menu rail | wood-fired stage on a peel | order ticket. */
+:root {
+  --bg: #fce9b8;
+  --bg-glow: rgba(216, 52, 31, .16);
+  --surface: #fff6de;
+  --surface-2: #f8df9f;
+  --line: #e6c46f;
+  --text: #2a1a12;
+  --muted: #74553a;
+  --accent: #d8341f;
+  --accent-2: #2f6b3a;
+  --on-accent: #fff6de;
+  --accent-soft: rgba(216, 52, 31, .1);
+  --board: #c98f55;
+  --board-edge: #9a6434;
+  --steam: rgba(255, 255, 255, .55);
+  --shadow: rgba(84, 38, 8, .28);
+  --font-display: "Lilita One", "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+  --font-body: "Figtree", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --r-sm: 10px;
+  --r-md: 16px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f2219; --bg-glow: rgba(244, 192, 78, .14); --surface: #163027; --surface-2: #1e3d31;
+    --line: #2c5243; --text: #fbefd5; --muted: #a9c2b1; --accent: #f0573c; --accent-2: #f4c04e;
+    --on-accent: #fff; --accent-soft: rgba(240, 87, 60, .14); --board: #6e4a2c; --board-edge: #4a2f1a;
+    --steam: rgba(251, 239, 213, .16); --shadow: rgba(0, 0, 0, .55); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f2219; --bg-glow: rgba(244, 192, 78, .14); --surface: #163027; --surface-2: #1e3d31;
+  --line: #2c5243; --text: #fbefd5; --muted: #a9c2b1; --accent: #f0573c; --accent-2: #f4c04e;
+  --on-accent: #fff; --accent-soft: rgba(240, 87, 60, .14); --board: #6e4a2c; --board-edge: #4a2f1a;
+  --steam: rgba(251, 239, 213, .16); --shadow: rgba(0, 0, 0, .55); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { background: var(--bg); color: var(--text); }
+body {
+  font-family: var(--font-body); font-size: 16px; line-height: 1.55; min-height: 100%;
+  -webkit-font-smoothing: antialiased; transition: background-color .35s, color .35s;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 10; background: var(--bg);
+}
+button, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.wrap {
+  max-width: 1320px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+.ribbon { background: var(--accent); color: var(--on-accent); font-size: 13px; font-weight: 600; }
+.ribbon .wrap { padding-block: 7px; text-align: center; }
+
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter: blur(12px);
+  border-bottom: 2px solid var(--line);
+}
+.top .wrap { display: flex; align-items: center; gap: 12px; padding-block: 12px; }
+.brand { display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; min-width: 0; }
+.brand-mark {
+  width: 42px; height: 42px; border-radius: 50%; background: var(--accent); color: var(--on-accent);
+  display: grid; place-items: center; font-family: var(--font-display); font-size: 22px; flex: none;
+}
+.brand-text { display: grid; line-height: 1.05; }
+.brand-text b { font-family: var(--font-display); font-weight: 400; font-size: 24px; color: var(--accent); letter-spacing: .01em; }
+.brand-text span { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+.tools { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.status {
+  display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600;
+  padding: 7px 13px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); white-space: nowrap;
+}
+.status i { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); }
+.status[data-open="true"] i { background: #3f9a4a; box-shadow: 0 0 0 4px rgba(63,154,74,.2); }
+.icon-btn {
+  width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--surface); border: 1px solid var(--line); padding: 0;
+}
+.icon-btn svg { width: 19px; height: 19px; }
+.lang {
+  appearance: none; height: 40px; padding: 0 12px; border-radius: 999px; font-size: 14px; font-weight: 700;
+  background: var(--surface); border: 1px solid var(--line);
+}
+.cart-btn {
+  display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 8px 0 14px; border-radius: 999px;
+  background: var(--text); color: var(--bg); border: 0; font-weight: 700; font-size: 14px;
+}
+.cart-btn svg { width: 18px; height: 18px; }
+.cart-count {
+  min-width: 26px; height: 26px; padding: 0 7px; border-radius: 999px; display: inline-grid; place-items: center;
+  background: var(--accent); color: var(--on-accent); font-size: 13px; font-variant-numeric: tabular-nums;
+}
+.cart-btn.bump { animation: bump .45s cubic-bezier(.3,1.6,.5,1); }
+@keyframes bump { 40% { transform: scale(1.12); } }
+
+.builder {
+  display: grid; gap: 28px; grid-template-columns: 260px minmax(0, 1fr) 350px;
+  grid-template-areas: "menu stage panel"; padding-block: 28px 56px; align-items: start;
+}
+
+.menu { grid-area: menu; min-width: 0; }
+.eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-2); margin: 0 0 10px 14px; }
+.menu-list { display: flex; flex-direction: column; gap: 4px; }
+.menu-item {
+  text-align: left; background: none; border: 2px solid transparent; padding: 10px 14px; border-radius: var(--r-md);
+  color: var(--text); display: grid; gap: 2px; transition: background-color .25s, border-color .25s;
+}
+.menu-item .row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.menu-item strong { font-size: 19px; font-weight: 700; line-height: 1.25; }
+.menu-item .from { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.menu-item small { font-size: 14px; line-height: 1.45; color: var(--muted); max-height: 0; overflow: hidden; opacity: 0; transition: max-height .35s, opacity .35s; }
+.menu-item:hover { background: var(--accent-soft); }
+.menu-item[aria-pressed="true"] { background: var(--surface); border-color: var(--accent); }
+.menu-item[aria-pressed="true"] small { max-height: 90px; opacity: 1; }
+
+.stage { grid-area: stage; display: flex; flex-direction: column; align-items: center; gap: 16px; min-width: 0; position: relative; }
+.stage::before {
+  content: ""; position: absolute; left: 50%; top: 0; width: min(680px, 120%); aspect-ratio: 1; transform: translate(-50%, -6%);
+  background: radial-gradient(closest-side, var(--bg-glow), transparent 72%); pointer-events: none;
+}
+.pizza-svg { width: min(580px, 100%); max-width: 100%; aspect-ratio: 1; height: auto; display: block; position: relative; overflow: visible; }
+#pizza { transition: transform .7s cubic-bezier(.3,1.35,.45,1); }
+#sauce { transition: r .5s ease; }
+.board-fill { fill: var(--board); }
+.board-edge { stroke: var(--board-edge); }
+.wood-flood { flood-color: var(--board); }
+.peel-shadow { fill: var(--shadow); }
+.title-block { text-align: center; position: relative; max-width: 560px; }
+.pizza-name { font-family: var(--font-display); font-weight: 400; font-size: clamp(40px, 6vw, 66px); line-height: 1.02; margin: 0; color: var(--accent); text-wrap: balance; letter-spacing: .005em; }
+.pizza-name em { font-style: normal; color: var(--accent-2); }
+.pizza-desc { margin: 10px auto 0; color: var(--muted); font-size: 16px; max-width: 48ch; text-wrap: pretty; }
+.note { font-size: 13.5px; color: var(--muted); margin: 0; text-align: center; position: relative; }
+.steam path { fill: none; stroke: var(--steam); stroke-width: 6; stroke-linecap: round; animation: steam 4.5s ease-in-out infinite; opacity: 0; }
+.steam path:nth-child(2) { animation-delay: 1.5s; }
+.steam path:nth-child(3) { animation-delay: 3s; }
+@keyframes steam { 0% { transform: translateY(20px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(-60px); opacity: 0; } }
+
+.panel {
+  grid-area: panel; background: var(--surface); border-radius: 22px; padding: 24px;
+  display: flex; flex-direction: column; gap: 22px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 88px);
+  min-width: 0; box-shadow: 0 1px 0 var(--line), 0 24px 50px -30px var(--shadow);
+}
+.group { display: flex; flex-direction: column; gap: 10px; border: 0; padding: 0; margin: 0; min-width: 0; }
+.group legend, .group-label { padding: 0; font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-2); margin-bottom: 10px; }
+.seg { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.seg.three { grid-template-columns: repeat(3, 1fr); }
+.opt {
+  background: var(--bg); border: 2px solid transparent; border-radius: var(--r-sm); padding: 9px 4px;
+  display: grid; gap: 0; justify-items: center; text-align: center; transition: border-color .2s, background-color .2s;
+}
+.opt b { font-size: 15px; font-weight: 700; }
+.opt span { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.opt[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.opt[aria-pressed="true"] span { color: var(--text); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px 6px 7px; border-radius: 999px;
+  background: var(--bg); border: 2px solid transparent; font-size: 14px; font-weight: 500;
+  transition: border-color .2s, background-color .2s, color .2s;
+}
+.chip .ico { width: 22px; height: 22px; flex: none; }
+.chip .x { font-size: 14px; font-weight: 700; color: var(--muted); }
+.chip[data-removed="true"] { color: var(--muted); text-decoration: line-through; border-color: var(--line); border-style: dashed; background: transparent; }
+.chip[data-removed="true"] .ico { opacity: .35; }
+.chip.extra[aria-pressed="true"] { border-color: var(--accent-2); }
+.chip.extra .x { color: var(--accent-2); }
+.half-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.half-row label { font-weight: 700; font-size: 16px; }
+.switch { width: 50px; height: 28px; border-radius: 999px; border: 0; background: var(--surface-2); position: relative; flex: none; padding: 0; transition: background-color .25s; }
+.switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: var(--surface); box-shadow: 0 1px 3px var(--shadow); transition: transform .3s cubic-bezier(.3,1.4,.5,1); }
+.switch[aria-checked="true"] { background: var(--accent); }
+.switch[aria-checked="true"]::after { transform: translateX(22px); }
+.select-wrap { display: grid; gap: 6px; }
+.select-wrap label { font-size: 14px; color: var(--muted); }
+.half-select {
+  appearance: none; width: 100%; padding: 11px 36px 11px 12px; border-radius: var(--r-sm); border: 2px solid var(--line); background: var(--bg);
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 19px) 50%, calc(100% - 14px) 50%; background-size: 5px 5px; background-repeat: no-repeat;
+}
+.addbar { display: flex; align-items: center; gap: 14px; padding-top: 18px; border-top: 2px dashed var(--line); }
+.total { display: grid; line-height: 1.15; min-width: 0; }
+.total small { font-size: 13px; color: var(--muted); font-weight: 600; }
+.total b { font-family: var(--font-display); font-weight: 400; font-size: 32px; font-variant-numeric: tabular-nums; }
+.add {
+  margin-left: auto; border: 0; border-radius: 999px; padding: 15px 24px; background: var(--accent); color: var(--on-accent);
+  font-weight: 800; font-size: 16px; box-shadow: 0 12px 26px -12px var(--accent); transition: transform .15s; white-space: nowrap;
+}
+.add:hover { transform: translateY(-1px); }
+.add:active { transform: translateY(1px) scale(.98); }
+.toast {
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); z-index: 20; transform: translate(-50%, 20px); opacity: 0;
+  pointer-events: none; background: var(--text); color: var(--bg); padding: 12px 20px; border-radius: 999px; font-weight: 700; font-size: 15px;
+  transition: opacity .3s, transform .3s; white-space: nowrap; max-width: calc(100vw - 32px); overflow: hidden; text-overflow: ellipsis;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.fly { position: fixed; z-index: 30; width: 64px; height: 64px; border-radius: 50%; pointer-events: none; background: radial-gradient(circle, #c43b22 0 50%, #f6d98f 51% 60%, #d39348 61% 100%); box-shadow: 0 8px 20px var(--shadow); }
+
+@media (max-width: 1100px) {
+  .builder { grid-template-columns: 230px minmax(0, 1fr); grid-template-areas: "menu stage" "panel panel"; }
+  .panel { position: static; }
+}
+@media (max-width: 760px) {
+  .builder { grid-template-columns: minmax(0, 1fr); grid-template-areas: "menu" "stage" "panel"; gap: 18px; padding-block: 16px 0; }
+  .brand-text span, .status-long { display: none; }
+  .status { font-size: 13px; padding: 6px 10px; }
+  .lang { display: none; }
+  .eyebrow { display: none; }
+  .menu-list { flex-direction: row; overflow-x: auto; gap: 6px; scrollbar-width: none; margin-inline: -16px; padding-inline: 16px; }
+  .menu-list::-webkit-scrollbar { display: none; }
+  .menu-item { flex: none; padding: 8px 15px; border-radius: 999px; background: var(--surface); }
+  .menu-item strong { font-size: 15px; }
+  .menu-item small, .menu-item .from { display: none; }
+  .pizza-svg { width: min(400px, 100%); }
+  .panel { border-radius: 22px 22px 0 0; padding: 18px 16px; margin-inline: -16px; }
+  .addbar { position: sticky; bottom: 0; margin: 0 -16px -18px; padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px)); background: var(--surface); }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="ribbon"><div class="wrap" data-i18n="ribbon"></div></div>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#" data-i18n-aria="brand.full">
+      <span class="brand-mark" aria-hidden="true">M</span>
+      <span class="brand-text"><b data-i18n="brand.name"></b><span data-i18n="brand.tagline"></span></span>
+    </a>
+    <div class="tools">
+      <span class="status" id="status" data-open="false"><i></i><span id="status-text"></span></span>
+      <select class="lang" id="lang" data-i18n-aria="lang.label"></select>
+      <button class="icon-btn" id="theme-btn" type="button"></button>
+      <button class="cart-btn" id="cart-btn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6.2"/><circle cx="10" cy="20.5" r="1.2"/><circle cx="17.5" cy="20.5" r="1.2"/></svg>
+        <span data-i18n="cart.label"></span><span class="cart-count" id="cart-count">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap builder">
+  <nav class="menu" data-i18n-aria="menu.label">
+    <p class="eyebrow" data-i18n="menu.label"></p>
+    <div class="menu-list" id="menu-list"></div>
+  </nav>
+
+  <section class="stage" aria-live="polite">
+    <svg class="pizza-svg" id="pizza-svg" viewBox="-255 -255 510 510" role="img" aria-labelledby="pizza-name">
+      <defs>
+        <!-- dough & crust -->
+        <radialGradient id="gCrust" r="50%">
+          <stop offset=".80" stop-color="#c78a45"/><stop offset=".875" stop-color="#ecb56c"/>
+          <stop offset=".935" stop-color="#d6913f"/><stop offset=".975" stop-color="#a8611f"/><stop offset="1" stop-color="#7c4214"/>
+        </radialGradient>
+        <radialGradient id="gCrustGF" r="50%">
+          <stop offset=".80" stop-color="#d9b077"/><stop offset=".875" stop-color="#f3d39b"/>
+          <stop offset=".935" stop-color="#e2b26c"/><stop offset=".975" stop-color="#bf8a45"/><stop offset="1" stop-color="#8e6129"/>
+        </radialGradient>
+        <radialGradient id="gSauce" r="50%">
+          <stop offset="0" stop-color="#c93c22"/><stop offset=".8" stop-color="#b02f17"/><stop offset="1" stop-color="#7f1d0c"/>
+        </radialGradient>
+        <radialGradient id="gLight" cx="32%" cy="28%" r="80%">
+          <stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/>
+          <stop offset=".8" stop-color="#2a0c00" stop-opacity=".12"/><stop offset="1" stop-color="#2a0c00" stop-opacity=".32"/>
+        </radialGradient>
+        <!-- toppings -->
+        <radialGradient id="gPep" cx="50%" cy="50%" r="50%">
+          <stop offset="0" stop-color="#b8321a"/><stop offset=".55" stop-color="#c94329"/><stop offset=".82" stop-color="#a42a15"/><stop offset=".93" stop-color="#6e1709"/><stop offset="1" stop-color="#3f0c04"/>
+        </radialGradient>
+        <radialGradient id="gGrease" r="50%"><stop offset=".55" stop-color="#e98a2b" stop-opacity=".55"/><stop offset="1" stop-color="#e98a2b" stop-opacity="0"/></radialGradient>
+        <radialGradient id="gSal" cx="45%" cy="40%" r="60%"><stop offset="0" stop-color="#9c2228"/><stop offset=".85" stop-color="#6d1418"/><stop offset="1" stop-color="#3d080b"/></radialGradient>
+        <linearGradient id="gHam" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f2b2a6"/><stop offset=".6" stop-color="#e08f84"/><stop offset="1" stop-color="#c36f66"/></linearGradient>
+        <radialGradient id="gMush" cx="45%" cy="35%" r="70%"><stop offset="0" stop-color="#f3e8d4"/><stop offset=".7" stop-color="#dcc6a2"/><stop offset="1" stop-color="#a7835b"/></radialGradient>
+        <linearGradient id="gCap" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4fae4a"/><stop offset="1" stop-color="#1f6a2a"/></linearGradient>
+        <radialGradient id="gOlive" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#6a4458"/><stop offset=".6" stop-color="#3a2230"/><stop offset="1" stop-color="#170c12"/></radialGradient>
+        <linearGradient id="gPine" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe58a"/><stop offset=".6" stop-color="#f6c94a"/><stop offset="1" stop-color="#d79c22"/></linearGradient>
+        <linearGradient id="gOnion" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c472a4"/><stop offset="1" stop-color="#7d3263"/></linearGradient>
+        <radialGradient id="gChick" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="#f4d3a3"/><stop offset=".7" stop-color="#dcaa6c"/><stop offset="1" stop-color="#a86e34"/></radialGradient>
+        <radialGradient id="gJal" r="50%"><stop offset=".62" stop-color="#d9eab0"/><stop offset=".68" stop-color="#5ba843"/><stop offset="1" stop-color="#2b6e26"/></radialGradient>
+        <radialGradient id="gBeef" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#9a6040"/><stop offset="1" stop-color="#4a2412"/></radialGradient>
+        <radialGradient id="gTom" r="50%"><stop offset="0" stop-color="#f88a6c"/><stop offset=".7" stop-color="#e2462e"/><stop offset=".92" stop-color="#c2311d"/><stop offset="1" stop-color="#9c2211"/></radialGradient>
+        <linearGradient id="gBasil" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5fb556"/><stop offset=".6" stop-color="#2f8435"/><stop offset="1" stop-color="#1c5a24"/></linearGradient>
+        <radialGradient id="gDollop" cx="40%" cy="35%" r="65%"><stop offset="0" stop-color="#fffbea"/><stop offset=".6" stop-color="#fbeab8"/><stop offset="1" stop-color="#ebc56c"/></radialGradient>
+
+        <!-- filters (static layers only, so animation stays smooth) -->
+        <filter id="wood" x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency=".004 .09" numOctaves="3" seed="8" result="g"/>
+          <feColorMatrix in="g" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0 1" result="white"/>
+          <feColorMatrix in="g" type="matrix" values=".5 0 0 0 .62  .5 0 0 0 .62  .5 0 0 0 .62  0 0 0 0 1" result="grain"/>
+          <feFlood class="wood-flood" result="col"/>
+          <feComposite in="grain" in2="col" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="tinted"/>
+          <feComposite in="tinted" in2="SourceGraphic" operator="in"/>
+        </filter>
+        <filter id="dough" x="-6%" y="-6%" width="112%" height="112%">
+          <feTurbulence type="fractalNoise" baseFrequency=".012" numOctaves="2" seed="3" result="w"/>
+          <feDisplacementMap in="SourceGraphic" in2="w" scale="12" xChannelSelector="R" yChannelSelector="G" result="shape"/>
+          <feTurbulence type="fractalNoise" baseFrequency=".06" numOctaves="4" seed="4" result="noise"/>
+          <feDiffuseLighting in="noise" surfaceScale="1.8" lighting-color="#fff" result="lit"><feDistantLight azimuth="225" elevation="52"/></feDiffuseLighting>
+          <feComposite in="lit" in2="shape" operator="arithmetic" k1="1.22" k2="0" k3="0" k4="0" result="tex"/>
+          <feComposite in="tex" in2="shape" operator="in"/>
+        </filter>
+        <filter id="leopard" x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency=".085" numOctaves="2" seed="11" result="n"/>
+          <feColorMatrix in="n" type="matrix" values="0 0 0 0 .2  0 0 0 0 .09  0 0 0 0 .03  11 0 0 0 -6.9" result="spots"/>
+          <feGaussianBlur in="spots" stdDeviation=".8" result="soft"/>
+          <feComposite in="soft" in2="SourceGraphic" operator="in"/>
+        </filter>
+        <filter id="sauceTex" x="-6%" y="-6%" width="112%" height="112%">
+          <feTurbulence type="fractalNoise" baseFrequency=".02" numOctaves="2" seed="2" result="w"/>
+          <feDisplacementMap in="SourceGraphic" in2="w" scale="14" xChannelSelector="R" yChannelSelector="G" result="shape"/>
+          <feTurbulence type="fractalNoise" baseFrequency=".09" numOctaves="3" seed="6" result="n"/>
+          <feSpecularLighting in="n" surfaceScale="2" specularConstant=".55" specularExponent="22" lighting-color="#ffd2bf" result="spec"><feDistantLight azimuth="225" elevation="40"/></feSpecularLighting>
+          <feComposite in="spec" in2="shape" operator="in" result="specIn"/>
+          <feMerge><feMergeNode in="shape"/><feMergeNode in="specIn"/></feMerge>
+        </filter>
+        <filter id="mozz" x="-15%" y="-15%" width="130%" height="130%">
+          <feTurbulence type="fractalNoise" baseFrequency=".016" numOctaves="2" seed="5" result="w"/>
+          <feDisplacementMap in="SourceGraphic" in2="w" scale="30" xChannelSelector="R" yChannelSelector="G" result="shape"/>
+          <feGaussianBlur in="shape" stdDeviation="3.5" result="soft"/>
+          <feFlood flood-color="#4a1005" flood-opacity=".5"/>
+          <feComposite in2="soft" operator="in"/>
+          <feOffset dx="1.5" dy="2.5" result="shade"/>
+          <feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="3" seed="9" result="bub"/>
+          <feComposite in="bub" in2="soft" operator="arithmetic" k1="0" k2=".35" k3="1" k4="0" result="bump"/>
+          <feSpecularLighting in="bump" surfaceScale="5" specularConstant=".85" specularExponent="16" lighting-color="#fff6d8" result="spec"><feDistantLight azimuth="225" elevation="48"/></feSpecularLighting>
+          <feComposite in="spec" in2="shape" operator="in" result="specIn"/>
+          <feTurbulence type="fractalNoise" baseFrequency=".055" numOctaves="3" seed="21" result="sp"/>
+          <feColorMatrix in="sp" type="matrix" values="0 0 0 0 .80  0 0 0 0 .52  0 0 0 0 .18  12 0 0 0 -7.3" result="brown"/>
+          <feGaussianBlur in="brown" stdDeviation="1.2" result="brownSoft"/>
+          <feComposite in="brownSoft" in2="shape" operator="in" result="brownIn"/>
+          <feMerge><feMergeNode in="shade"/><feMergeNode in="shape"/><feMergeNode in="brownIn"/><feMergeNode in="specIn"/></feMerge>
+        </filter>
+        <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="1.4" dy="2.4" stdDeviation="1.5" flood-color="#3a0d05" flood-opacity=".5"/>
+        </filter>
+        <filter id="blur14" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="14"/></filter>
+        <filter id="blur3"><feGaussianBlur stdDeviation="3"/></filter>
+        <clipPath id="clipL"><rect x="-255" y="-255" width="254" height="510"/></clipPath>
+        <clipPath id="clipR"><rect x="1" y="-255" width="254" height="510"/></clipPath>
+      </defs>
+
+      <ellipse class="peel-shadow" cx="8" cy="24" rx="232" ry="226" filter="url(#blur14)"/>
+      <circle r="238" class="board-fill"/>
+      <circle r="238" filter="url(#wood)" fill="#fff"/>
+      <circle r="237" fill="none" class="board-edge" stroke-width="3"/>
+
+      <g class="steam" transform="translate(0,-150)" aria-hidden="true">
+        <path d="M-60 0 q-14 -20 0 -40 t0 -40"/><path d="M0 -10 q-14 -20 0 -40 t0 -40"/><path d="M60 0 q-14 -20 0 -40 t0 -40"/>
+      </g>
+
+      <g id="pizza">
+        <circle r="202" fill="#3a1606" opacity=".35" filter="url(#blur3)" transform="translate(2 4)"/>
+        <circle id="crust" r="200" fill="url(#gCrust)" filter="url(#dough)"/>
+        <circle r="192" fill="none" stroke="#fff" stroke-width="16" filter="url(#leopard)" opacity=".5"/>
+        <circle r="174" fill="none" stroke="#5a2a0c" stroke-width="6" opacity=".35" filter="url(#blur3)"/>
+        <circle id="sauce" r="172" fill="url(#gSauce)" filter="url(#sauceTex)"/>
+        <g id="cheese" filter="url(#mozz)"></g>
+        <line id="cut" x1="0" y1="-198" x2="0" y2="198" stroke="#4a1a06" stroke-width="2.5" opacity="0"/>
+        <g id="tops"></g>
+        <g id="herbs" opacity=".9"></g>
+        <circle r="202" fill="url(#gLight)" pointer-events="none"/>
+      </g>
+    </svg>
+
+    <div class="title-block">
+      <h1 class="pizza-name" id="pizza-name"></h1>
+      <p class="pizza-desc" id="pizza-desc"></p>
+    </div>
+    <p class="note" data-i18n="stage.note"></p>
+  </section>
+
+  <aside class="panel" data-i18n-aria="panel.label">
+    <fieldset class="group"><legend data-i18n="panel.size"></legend><div class="seg" id="sizes"></div></fieldset>
+    <fieldset class="group"><legend data-i18n="panel.base"></legend><div class="seg three" id="bases"></div></fieldset>
+    <div class="group"><span class="group-label" data-i18n="panel.included"></span><div class="chips" id="included"></div></div>
+    <div class="group"><span class="group-label" id="extras-label"></span><div class="chips" id="extras"></div></div>
+    <div class="group">
+      <div class="half-row">
+        <label id="half-label" for="half-switch" data-i18n="panel.half"></label>
+        <button class="switch" id="half-switch" type="button" role="switch" aria-checked="false" aria-labelledby="half-label"></button>
+      </div>
+      <div class="select-wrap" id="half-pick" hidden>
+        <label for="half-select" data-i18n="panel.rightHalf"></label>
+        <select class="half-select" id="half-select"></select>
+      </div>
+    </div>
+    <div class="addbar">
+      <div class="total"><small id="total-label"></small><b id="total"></b></div>
+      <button class="add" id="add" type="button" data-i18n="panel.add"></button>
+    </div>
+  </aside>
+</main>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  /* ================= i18n ================= */
+  const LOCALES = {
+    en: { label: "English", dir: "ltr", numberLocale: "en-AU", currency: "AUD" },
+  };
+  const MESSAGES = {
+    en: {
+      "ribbon": "Concept prototype · illustrated pizza stands in for real photos · sample prices",
+      "brand.name": "Melroad", "brand.tagline": "Pizza n Kebab · Newport", "brand.full": "Melroad Pizza n Kebab",
+      "lang.label": "Language", "cart.label": "Cart",
+      "theme.system": "Theme: match device", "theme.light": "Theme: light", "theme.dark": "Theme: dark",
+      "status.closes": "Open · closes {time}", "status.opensToday": "Opens {time} today", "status.opensTomorrow": "Opens {time} tomorrow",
+      "menu.label": "Traditional pizza", "menu.from": "from {price}",
+      "stage.note": "Toppings drop on as you build. Tap a topping to leave it off.",
+      "panel.label": "Your pizza", "panel.size": "Size", "panel.base": "Base", "panel.included": "On this pizza",
+      "panel.extras": "Add extras · {price} each", "panel.half": "Half & half", "panel.rightHalf": "Right half",
+      "panel.add": "Add to order", "panel.halfDesc": "Half {left}, half {right}. {fee} to split.",
+      "panel.included.short": "Included", "panel.leaveOff": "{name}. Leave off", "panel.addBack": "{name}, left off. Add back",
+      "toast.added": "Added {size} {name} · {price}",
+      "size.S": "Small", "size.M": "Medium", "size.L": "Large", "size.XL": "XL",
+      "base.classic": "Classic", "base.thin": "Thin", "base.gf": "Gluten free",
+      "top.pepperoni": "Pepperoni", "top.salami": "Hot salami", "top.ham": "Smoked meat", "top.mushroom": "Mushroom",
+      "top.capsicum": "Capsicum", "top.olive": "Kalamata olives", "top.olive.short": "Olives", "top.pineapple": "Pineapple",
+      "top.onion": "Spanish onion", "top.chicken": "Chicken", "top.jalapeno": "Jalapeños", "top.beef": "Minced beef",
+      "top.tomato": "Tomato", "top.basil": "Fresh basil", "top.cheese": "Extra cheese", "top.bbq": "BBQ sauce",
+      "pizza.supreme.name": "Supreme", "pizza.supreme.desc": "Hot salami, mushroom, capsicum, pineapple, smoked meat, Kalamata olives, tomato base & mozzarella.",
+      "pizza.pepperoni.name": "Pepperoni", "pizza.pepperoni.desc": "Pepperoni, tomato base & mozzarella.",
+      "pizza.meatlovers.name": "Meat Lovers", "pizza.meatlovers.desc": "Smoked meat, hot salami, minced beef, shredded meat, BBQ sauce, tomato base & mozzarella.",
+      "pizza.bbqchicken.name": "BBQ Chicken", "pizza.bbqchicken.desc": "Chicken, Spanish onion, BBQ sauce, tomato base & mozzarella.",
+      "pizza.mexican.name": "Mexican", "pizza.mexican.desc": "Hot salami, capsicum, mushroom, Kalamata olives, Spanish onion, jalapeños, tomato base & mozzarella.",
+      "pizza.hawaiian.name": "Hawaiian", "pizza.hawaiian.desc": "Shaved meat, pineapple, tomato base & mozzarella.",
+      "pizza.vegetarian.name": "Vegetarian", "pizza.vegetarian.desc": "Onion, capsicum, mushrooms, olives, tomato base & mozzarella.",
+      "pizza.margarita.name": "Margarita", "pizza.margarita.desc": "Tomato, mozzarella & tomato base, finished with fresh basil.",
+    },
+  };
+  let locale = "en";
+  const t = (key, vars = {}) => {
+    const msg = MESSAGES[locale][key] ?? MESSAGES.en[key] ?? key;
+    return msg.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? "");
+  };
+  const formatPrice = (cents) => {
+    const l = LOCALES[locale];
+    return new Intl.NumberFormat(l.numberLocale, { style: "currency", currency: l.currency }).format(cents / 100);
+  };
+  function applyStaticText() {
+    document.documentElement.lang = locale;
+    document.documentElement.dir = LOCALES[locale].dir;
+    document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll("[data-i18n-aria]").forEach((el) => el.setAttribute("aria-label", t(el.dataset.i18nAria)));
+  }
+
+  /* ================= theme ================= */
+  const THEME_KEY = "melroad-theme";
+  const THEMES = ["system", "light", "dark"];
+  const THEME_ICONS = {
+    system: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg>',
+    light: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+    dark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>',
+  };
+  const readTheme = () => { try { return localStorage.getItem(THEME_KEY) || "system"; } catch { return "system"; } };
+  function setTheme(mode) {
+    if (mode === "system") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.dataset.theme = mode;
+    try { localStorage.setItem(THEME_KEY, mode); } catch { /* storage unavailable */ }
+    const btn = $("theme-btn");
+    btn.innerHTML = THEME_ICONS[mode];
+    btn.setAttribute("aria-label", t(`theme.${mode}`));
+    btn.title = t(`theme.${mode}`);
+    btn.dataset.mode = mode;
+  }
+
+  /* ================= constants ================= */
+  const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const TOPPING_RADIUS = 148;
+  const HALF_FEE = 200;
+  const SIZES = [
+    { id: "S", inch: 9, price: 1390, extra: 200, scale: .76 },
+    { id: "M", inch: 11, price: 1790, extra: 250, scale: .85 },
+    { id: "L", inch: 13, price: 2190, extra: 300, scale: .93 },
+    { id: "XL", inch: 15, price: 2590, extra: 350, scale: 1 },
+  ];
+  const BASES = [
+    { id: "classic", price: 0, sauceR: 172, crust: "gCrust" },
+    { id: "thin", price: 0, sauceR: 185, crust: "gCrust" },
+    { id: "gf", price: 400, sauceR: 175, crust: "gCrustGF" },
+  ];
+  const HOURS = { 0: [780, 1410], 1: [960, 1425], 2: [960, 1425], 3: [960, 1425], 4: [960, 1425], 5: [960, 1530], 6: [960, 1530] };
+
+  /* ================= helpers ================= */
+  const $ = (id) => document.getElementById(id);
+  const hash = (str) => { let h = 2166136261; for (const c of str) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
+  const seeded = (seed) => () => {
+    seed = (seed + 0x6d2b79f5) | 0;
+    let x = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    x = (x + Math.imul(x ^ (x >>> 7), 61 | x)) ^ x;
+    return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+  };
+  const f1 = (n) => n.toFixed(1);
+  const svgEl = (tag, attrs = {}, html = "") => {
+    const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+    if (html) el.innerHTML = html;
+    return el;
+  };
+  const anim = (el, frames, opts) => (REDUCED ? { finished: Promise.resolve() } : el.animate(frames, { fill: "both", ...opts }));
+  const specks = (rand, n, maxR, color, rMin, rMax, op) => {
+    let s = "";
+    for (let i = 0; i < n; i++) {
+      const a = rand() * 6.283, d = Math.sqrt(rand()) * maxR;
+      s += `<circle cx="${f1(Math.cos(a) * d)}" cy="${f1(Math.sin(a) * d)}" r="${f1(rMin + rand() * (rMax - rMin))}" fill="${color}" opacity="${op}"/>`;
+    }
+    return s;
+  };
+  /* irregular closed blob path, radius r with jitter j */
+  const blob = (rand, r, j, pts = 9) => {
+    const p = [];
+    for (let i = 0; i < pts; i++) {
+      const a = (i / pts) * 6.283, rr = r * (1 - j / 2 + rand() * j);
+      p.push([Math.cos(a) * rr, Math.sin(a) * rr]);
+    }
+    let d = "";
+    for (let i = 0; i < pts; i++) {
+      const [x0, y0] = p[i], [x1, y1] = p[(i + 1) % pts];
+      const mx = (x0 + x1) / 2, my = (y0 + y1) / 2;
+      d += i === 0 ? `M${f1(mx)} ${f1(my)}` : ` Q${f1(x0)} ${f1(y0)} ${f1(mx)} ${f1(my)}`;
+    }
+    const [x0, y0] = p[0], [x1, y1] = p[1];
+    return d + ` Q${f1(x0)} ${f1(y0)} ${f1((x0 + x1) / 2)} ${f1((y0 + y1) / 2)}Z`;
+  };
+
+  /* ================= topping artwork (centred on 0,0) ================= */
+  const TOPPINGS = {
+    pepperoni: { count: 15, gap: 44, draw: (r) => {
+      const R = 19 + r() * 3;
+      return `<circle r="${R + 4}" fill="url(#gGrease)"/><path d="${blob(r, R, .08, 12)}" fill="url(#gPep)"/>` +
+        `<circle r="${f1(R * .74)}" fill="none" stroke="#e0593b" stroke-width="1.4" opacity=".45"/>` +
+        specks(r, 7, R - 6, "#f19a78", 1, 2.6, .5) + specks(r, 5, R - 2, "#2a0703", .6, 1.4, .55) +
+        `<ellipse cx="${f1(-R * .28)}" cy="${f1(-R * .32)}" rx="${f1(R * .32)}" ry="${f1(R * .16)}" transform="rotate(-30)" fill="#fff" opacity=".22"/>`;
+    }},
+    salami: { count: 9, gap: 40, draw: (r) => {
+      const R = 16 + r() * 3;
+      return `<circle r="${R + 3}" fill="url(#gGrease)" opacity=".7"/><path d="${blob(r, R, .1, 11)}" fill="url(#gSal)"/>` +
+        specks(r, 10, R - 3, "#f4cdbd", .9, 2.4, .85) + specks(r, 5, R - 3, "#1b0304", .7, 1.5, .6) +
+        `<ellipse cx="${f1(-R * .3)}" cy="${f1(-R * .3)}" rx="${f1(R * .3)}" ry="${f1(R * .14)}" transform="rotate(-30)" fill="#fff" opacity=".16"/>`;
+    }},
+    ham: { count: 10, gap: 34, draw: (r) =>
+      `<path d="${blob(r, 14, .45, 7)}" fill="url(#gHam)"/><path d="${blob(r, 14, .45, 7)}" fill="none" stroke="#fbd9d1" stroke-width="2.2" opacity=".75"/>` +
+      `<path d="M-7 -2 Q0 -6 7 0" stroke="#f9d3ca" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".7"/>`
+    },
+    mushroom: { count: 9, gap: 34, draw: (r) => {
+      const k = .9 + r() * .2;
+      return `<g transform="scale(${f1(k)})"><path d="M-17 3 C-18 -16 18 -16 17 3 Q0 6 -17 3Z" fill="url(#gMush)" stroke="#8d6741" stroke-width="1.8"/>` +
+        `<path d="M-6 3 L-5 14 Q0 17 5 14 L6 3" fill="url(#gMush)" stroke="#8d6741" stroke-width="1.6"/>` +
+        `<path d="M-12 0 Q-9 -6 -7 -9 M-5 1 L-3 -11 M2 1 L2 -11 M8 0 L7 -9 M13 0 Q11 -5 10 -7" stroke="#b08c66" stroke-width="1" stroke-linecap="round" opacity=".8"/>` +
+        `<path d="M-14 -4 C-12 -12 -4 -14 2 -13" stroke="#fff" stroke-width="1.6" fill="none" opacity=".35" stroke-linecap="round"/></g>`;
+    }},
+    capsicum: { count: 9, gap: 30, draw: (r) => {
+      const w = 12 + r() * 5, h = 14 + r() * 5;
+      return `<path d="M${-w} 6 Q0 ${-h} ${w} 6" fill="none" stroke="#1a5222" stroke-width="7.5" stroke-linecap="round"/>` +
+        `<path d="M${-w} 6 Q0 ${-h} ${w} 6" fill="none" stroke="url(#gCap)" stroke-width="5.5" stroke-linecap="round"/>` +
+        `<path d="M${f1(-w + 3)} 3 Q0 ${f1(-h + 4)} ${f1(w - 4)} 3" fill="none" stroke="#a9e39a" stroke-width="1.4" stroke-linecap="round" opacity=".7"/>`;
+    }},
+    olive: { count: 10, gap: 22, draw: (r) => {
+      const R = 7 + r() * 1.2;
+      return `<circle r="${f1(R)}" fill="none" stroke="url(#gOlive)" stroke-width="5.4"/><circle r="${f1(R - 2.6)}" fill="#b5392a" opacity=".55"/>` +
+        `<path d="M${f1(-R * .7)} ${f1(-R * .5)} A${f1(R)} ${f1(R)} 0 0 1 ${f1(R * .4)} ${f1(-R * .9)}" stroke="#c8a8ba" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".7"/>`;
+    }},
+    pineapple: { count: 9, gap: 26, draw: (r) =>
+      `<path d="${blob(r, 10, .35, 4)}" fill="url(#gPine)" stroke="#c98d1b" stroke-width="1.4" stroke-linejoin="round"/>` +
+      `<path d="M-5 -4 L4 5 M2 -6 L-4 3 M-7 1 L1 -7" stroke="#fff3c0" stroke-width="1.1" stroke-linecap="round" opacity=".8"/>`
+    },
+    onion: { count: 9, gap: 26, draw: (r) => {
+      const w = 11 + r() * 5;
+      return `<path d="M${-w} 5 Q0 -14 ${w} 5" fill="none" stroke="url(#gOnion)" stroke-width="3.8" stroke-linecap="round" opacity=".92"/>` +
+        `<path d="M${f1(-w + 3)} 3 Q0 -9 ${f1(w - 3)} 3" fill="none" stroke="#f0d6e6" stroke-width="1.6" stroke-linecap="round" opacity=".85"/>`;
+    }},
+    chicken: { count: 11, gap: 32, draw: (r) =>
+      `<path d="${blob(r, 12.5, .4, 7)}" fill="url(#gChick)"/>` +
+      `<path d="M-7 -6 L-2 8 M2 -8 L7 5" stroke="#7a4a1e" stroke-width="2.4" stroke-linecap="round" opacity=".55"/>` +
+      `<path d="M-8 -5 Q-2 -10 6 -8" stroke="#fff" stroke-width="1.4" fill="none" opacity=".3" stroke-linecap="round"/>`
+    },
+    jalapeno: { count: 8, gap: 26, draw: (r) =>
+      `<circle r="9" fill="url(#gJal)"/>${specks(r, 5, 3.5, "#f9fbe6", .9, 1.5, 1)}<path d="M-6 -5 A8 8 0 0 1 3 -8" stroke="#c6f0a8" stroke-width="1.4" fill="none" opacity=".6"/>`
+    },
+    beef: { count: 14, gap: 22, draw: (r) => {
+      let s = "";
+      for (let i = 0; i < 4; i++) {
+        const a = r() * 6.283, d = r() * 5;
+        s += `<path d="${blob(r, 3 + r() * 2.2, .5, 6)}" transform="translate(${f1(Math.cos(a) * d)} ${f1(Math.sin(a) * d)})" fill="url(#gBeef)"/>`;
+      }
+      return s;
+    }},
+    tomato: { count: 6, gap: 50, draw: (r) => {
+      let seeds = "";
+      for (let i = 0; i < 5; i++) {
+        const a = (i / 5) * 6.283 + r() * .3, cx = f1(Math.cos(a) * 9.5), cy = f1(Math.sin(a) * 9.5);
+        seeds += `<ellipse cx="${cx}" cy="${cy}" rx="4.6" ry="2.8" transform="rotate(${(a * 57.3).toFixed(0)} ${cx} ${cy})" fill="#fbb48f" opacity=".9"/>`;
+      }
+      return `<circle r="20" fill="url(#gTom)"/>${seeds}<circle r="3.5" fill="#f7a07e"/><ellipse cx="-7" cy="-8" rx="6" ry="2.6" transform="rotate(-35)" fill="#fff" opacity=".25"/>`;
+    }},
+    basil: { count: 7, gap: 34, draw: () =>
+      `<path d="M-15 0 Q-5 -13 15 0 Q-5 13 -15 0Z" fill="url(#gBasil)"/><path d="M-13 0 L13 0 M-4 0 L1 -6 M3 0 L7 -5 M-4 0 L1 6 M3 0 L7 5" stroke="#8fd283" stroke-width="1" fill="none" opacity=".75"/>`
+    },
+    cheese: { count: 16, gap: 20, draw: (r) =>
+      `<path d="${blob(r, 8 + r() * 4, .4, 7)}" fill="url(#gDollop)"/><ellipse cx="-2" cy="-3" rx="3" ry="1.6" fill="#fff" opacity=".7"/>`
+    },
+    bbq: { drizzle: true },
+  };
+
+  const PIZZAS = {
+    supreme: ["salami", "ham", "mushroom", "capsicum", "pineapple", "olive"],
+    pepperoni: ["pepperoni"],
+    meatlovers: ["ham", "salami", "beef", "bbq"],
+    bbqchicken: ["chicken", "onion", "bbq"],
+    mexican: ["salami", "mushroom", "capsicum", "onion", "olive", "jalapeno"],
+    hawaiian: ["ham", "pineapple"],
+    vegetarian: ["mushroom", "capsicum", "onion", "olive"],
+    margarita: ["tomato", "basil"],
+  };
+  const EXTRAS = ["cheese", "jalapeno", "olive", "mushroom", "pineapple", "onion"];
+  const pizzaName = (id) => t(`pizza.${id}.name`);
+  const toppingName = (id, short) => (short && MESSAGES[locale][`top.${id}.short`]) || t(`top.${id}`);
+
+  /* ================= state ================= */
+  const state = { pizzaId: "supreme", rightId: null, sizeId: "L", baseId: "classic", removed: new Set(), extras: new Set(), cart: 0 };
+  const size = () => SIZES.find((s) => s.id === state.sizeId);
+  const base = () => BASES.find((b) => b.id === state.baseId);
+  const includedToppings = () => [...new Set([...PIZZAS[state.pizzaId], ...(state.rightId ? PIZZAS[state.rightId] : [])])];
+  const totalCents = () => size().price + base().price + state.extras.size * size().extra + (state.rightId ? HALF_FEE : 0);
+
+  /* ================= placement ================= */
+  function scatter({ count, gap, side, rand, occupied }) {
+    const out = [];
+    for (let tries = 0; out.length < count && tries < count * 80; tries++) {
+      const a = rand() * Math.PI * 2, d = Math.sqrt(rand()) * TOPPING_RADIUS;
+      const x = Math.cos(a) * d, y = Math.sin(a) * d;
+      if ((side === "L" && x > -10) || (side === "R" && x < 10)) continue;
+      if (occupied.some((p) => Math.hypot(p.x - x, p.y - y) < (p.gap + gap) / 2)) continue;
+      const p = { x, y, gap, rot: rand() * 360 };
+      occupied.push(p);
+      out.push(p);
+    }
+    return out;
+  }
+  function plannedPieces() {
+    const halves = state.rightId ? [["L", state.pizzaId], ["R", state.rightId]] : [["F", state.pizzaId]];
+    const sig = halves.map((h) => h.join("-")).join("|");
+    const occupied = [], pieces = [];
+    halves.forEach(([side, pid]) => {
+      PIZZAS[pid].forEach((tid, wave) => {
+        const top = TOPPINGS[tid], key = `${sig}:${side}:${tid}`;
+        if (top.drizzle) { pieces.push({ key, tid, side, wave, drizzle: true, base: true }); return; }
+        const rand = seeded(hash(key));
+        const count = side === "F" ? top.count : Math.ceil(top.count * .55);
+        scatter({ count, gap: top.gap, side, rand, occupied }).forEach((p, i) =>
+          pieces.push({ ...p, key: `${key}:${i}`, tid, side, wave, i, base: true, art: top.draw(rand) }));
+      });
+    });
+    EXTRAS.forEach((tid, n) => {
+      const top = TOPPINGS[tid], key = `${sig}:X:${tid}`, rand = seeded(hash(key));
+      const count = tid === "cheese" ? top.count : Math.ceil(top.count * .6);
+      scatter({ count, gap: top.gap * .8, side: "F", rand, occupied }).forEach((p, i) =>
+        pieces.push({ ...p, key: `${key}:${i}`, tid, side: "F", wave: 10 + n, i, base: false, art: top.draw(rand) }));
+    });
+    return pieces.filter((p) => (p.base ? !state.removed.has(p.tid) : state.extras.has(p.tid)));
+  }
+
+  /* ================= pizza rendering ================= */
+  const tops = $("tops");
+  const live = new Map();
+  function drizzlePath(side) {
+    const pts = [];
+    for (let y = -136, k = 0; y <= 136; y += 22, k++) pts.push([(k % 2 ? 1 : -1) * Math.sqrt(Math.max(0, 148 * 148 - y * y)) * .9, y]);
+    let d = `M${f1(pts[0][0])} ${pts[0][1]}`;
+    for (let i = 1; i < pts.length; i++) {
+      const [x0, y0] = pts[i - 1], [x1, y1] = pts[i];
+      d += ` C${f1(x0 * .35)} ${y0 + 5} ${f1(x1 * .35)} ${y1 - 5} ${f1(x1)} ${y1}`;
+    }
+    const g = svgEl("g", side === "F" ? {} : { "clip-path": `url(#clip${side})` });
+    g.innerHTML = `<path d="${d}" fill="none" stroke="#3d1407" stroke-width="7" stroke-linecap="round" opacity=".9" filter="url(#shadow)"/>` +
+      `<path d="${d}" fill="none" stroke="#6b2a10" stroke-width="4.5" stroke-linecap="round"/>` +
+      `<path d="${d}" fill="none" stroke="#c47a4f" stroke-width="1.3" stroke-linecap="round" opacity=".7" transform="translate(-1 -1.5)"/>`;
+    return g;
+  }
+  function makePiece(p) {
+    if (p.drizzle) return drizzlePath(p.side);
+    const outer = svgEl("g", { transform: `translate(${f1(p.x)} ${f1(p.y)})` });
+    const drop = svgEl("g", { class: "drop" });
+    drop.appendChild(svgEl("g", { transform: `rotate(${p.rot.toFixed(0)})`, filter: "url(#shadow)" }, p.art));
+    outer.appendChild(drop);
+    return outer;
+  }
+  function enter(el, p, delay) {
+    if (p.drizzle) {
+      el.querySelectorAll("path").forEach((path) => {
+        const len = path.getTotalLength();
+        path.style.strokeDasharray = len;
+        anim(path, [{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 1100, delay, easing: "cubic-bezier(.45,0,.2,1)" });
+      });
+      return;
+    }
+    const sway = (p.x > 0 ? -1 : 1) * 18;
+    anim(el.querySelector(".drop"), [
+      { transform: `translate(${sway}px,-260px) scale(1.35)`, opacity: 0 },
+      { opacity: 1, offset: .35 },
+      { transform: "translate(0,0) scale(1)", opacity: 1 },
+    ], { duration: 560, delay, easing: "cubic-bezier(.25,1.3,.45,1)" });
+  }
+  function exit(el, p, delay, lift) {
+    const target = p.drizzle ? el : el.querySelector(".drop");
+    const frames = lift
+      ? [{ transform: "translate(0,0)", opacity: 1 }, { transform: "translate(0,-90px) scale(.6)", opacity: 0 }]
+      : [{ transform: "scale(1)", opacity: 1 }, { transform: "scale(0)", opacity: 0 }];
+    anim(target, frames, { duration: lift ? 360 : 260, delay, easing: "cubic-bezier(.5,0,.75,0)" }).finished.then(() => el.remove());
+  }
+  function renderPizza({ rebuild = false } = {}) {
+    const want = plannedPieces(), wantKeys = new Set(want.map((p) => p.key));
+    let outIndex = 0;
+    for (const [key, entry] of live) {
+      if (wantKeys.has(key)) continue;
+      exit(entry.el, entry.p, rebuild ? Math.min(outIndex++ * 6, 220) : 0, rebuild);
+      live.delete(key);
+    }
+    const fresh = want.filter((p) => !live.has(p.key)).sort((a, b) => a.wave - b.wave || (a.i || 0) - (b.i || 0));
+    const waves = [...new Set(fresh.map((p) => p.wave))];
+    const start = rebuild ? 380 : 0;
+    fresh.forEach((p) => {
+      const el = makePiece(p);
+      tops.appendChild(el);
+      live.set(p.key, { el, p });
+      enter(el, p, start + waves.indexOf(p.wave) * 230 + (p.i || 0) * 26);
+    });
+    if (rebuild) {
+      anim($("pizza"), [{ rotate: "0deg" }, { rotate: "-28deg", offset: .35 }, { rotate: "0deg" }], { duration: 900, easing: "cubic-bezier(.3,1.2,.4,1)", composite: "add" });
+      anim($("herbs"), [{ opacity: 0 }, { opacity: 0, offset: .7 }, { opacity: .9 }], { duration: 1800 });
+    }
+    $("pizza").style.transform = `scale(${size().scale})`;
+    $("sauce").setAttribute("r", base().sauceR);
+    $("crust").setAttribute("fill", `url(#${base().crust})`);
+    $("cut").setAttribute("opacity", state.rightId ? ".55" : "0");
+  }
+  function paintStatic() {
+    const rand = seeded(99);
+    let cheese = "";
+    cheese += `<circle r="118" fill="#f8e2a2"/>`;
+    for (let i = 0; i < 34; i++) {
+      const a = rand() * 6.283, d = 70 + Math.sqrt(rand()) * 70;
+      cheese += `<circle cx="${f1(Math.cos(a) * d)}" cy="${f1(Math.sin(a) * d)}" r="${f1(24 + rand() * 18)}" fill="${rand() > .3 ? "#f8e2a2" : "#f3d27e"}"/>`;
+    }
+    $("cheese").innerHTML = cheese;
+    let herbs = specks(rand, 70, 160, "#3c5a24", .5, 1.3, .8) + specks(rand, 40, 160, "#fff7e0", .4, 1, .75);
+    $("herbs").innerHTML = herbs;
+  }
+
+  /* ================= panel rendering ================= */
+  const toppingIcon = (tid) => TOPPINGS[tid].drizzle
+    ? `<svg class="ico" viewBox="-20 -20 40 40" aria-hidden="true"><path d="M-14 -6 C-4 -14 4 2 14 -6 M-14 6 C-4 -2 4 14 14 6" stroke="#6b2a10" stroke-width="4.5" fill="none" stroke-linecap="round"/></svg>`
+    : `<svg class="ico" viewBox="-20 -20 40 40" aria-hidden="true">${TOPPINGS[tid].draw(seeded(hash(tid)))}</svg>`;
+  function renderMenu() {
+    const from = t("menu.from", { price: formatPrice(SIZES[0].price) });
+    $("menu-list").innerHTML = Object.keys(PIZZAS).map((id) =>
+      `<button class="menu-item" type="button" data-pizza="${id}" aria-pressed="${id === state.pizzaId}"><span class="row"><strong>${pizzaName(id)}</strong><span class="from">${from}</span></span><small>${t(`pizza.${id}.desc`)}</small></button>`
+    ).join("");
+  }
+  function renderPanel() {
+    $("sizes").innerHTML = SIZES.map((s) =>
+      `<button class="opt" type="button" data-size="${s.id}" aria-pressed="${s.id === state.sizeId}"><b>${t(`size.${s.id}`)}</b><span>${s.inch}"</span><span>${formatPrice(s.price)}</span></button>`).join("");
+    $("bases").innerHTML = BASES.map((b) =>
+      `<button class="opt" type="button" data-base="${b.id}" aria-pressed="${b.id === state.baseId}"><b>${t(`base.${b.id}`)}</b><span>${b.price ? "+" + formatPrice(b.price) : t("panel.included.short")}</span></button>`).join("");
+    $("included").innerHTML = includedToppings().map((tid) => {
+      const off = state.removed.has(tid), name = toppingName(tid);
+      return `<button class="chip" type="button" data-remove="${tid}" data-removed="${off}" aria-pressed="${!off}" aria-label="${t(off ? "panel.addBack" : "panel.leaveOff", { name })}">${toppingIcon(tid)}${name}<span class="x" aria-hidden="true">${off ? "+" : "×"}</span></button>`;
+    }).join("");
+    $("extras-label").textContent = t("panel.extras", { price: formatPrice(size().extra) });
+    $("extras").innerHTML = EXTRAS.map((tid) => {
+      const on = state.extras.has(tid);
+      return `<button class="chip extra" type="button" data-extra="${tid}" aria-pressed="${on}">${toppingIcon(tid)}${toppingName(tid, true)}<span class="x" aria-hidden="true">${on ? "✓" : "+"}</span></button>`;
+    }).join("");
+    $("half-select").innerHTML = Object.keys(PIZZAS).filter((id) => id !== state.pizzaId)
+      .map((id) => `<option value="${id}" ${id === state.rightId ? "selected" : ""}>${pizzaName(id)}</option>`).join("");
+    $("half-switch").setAttribute("aria-checked", String(!!state.rightId));
+    $("half-pick").hidden = !state.rightId;
+    const left = pizzaName(state.pizzaId);
+    $("pizza-name").innerHTML = state.rightId ? `${left} <em>/</em> ${pizzaName(state.rightId)}` : left;
+    $("pizza-desc").textContent = state.rightId
+      ? t("panel.halfDesc", { left, right: pizzaName(state.rightId), fee: formatPrice(HALF_FEE) })
+      : t(`pizza.${state.pizzaId}.desc`);
+    $("total-label").textContent = `${t(`size.${size().id}`)} ${size().inch}" · ${t(`base.${base().id}`)}`;
+    $("total").textContent = formatPrice(totalCents());
+  }
+  function renderAll(opts) {
+    document.querySelectorAll(".menu-item").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.pizza === state.pizzaId)));
+    renderPanel();
+    renderPizza(opts);
+  }
+
+  /* ================= opening hours (Australia/Melbourne) ================= */
+  function melbourneNow() {
+    const parts = Object.fromEntries(new Intl.DateTimeFormat("en-AU", { timeZone: "Australia/Melbourne", weekday: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" })
+      .formatToParts(new Date()).map((p) => [p.type, p.value]));
+    return { day: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(parts.weekday), minutes: Number(parts.hour) * 60 + Number(parts.minute) };
+  }
+  const clock = (mins) => {
+    const m = mins % 1440, h = Math.floor(m / 60), mm = m % 60;
+    return `${h % 12 || 12}${mm ? ":" + String(mm).padStart(2, "0") : ""}${h < 12 ? "am" : "pm"}`;
+  };
+  function openStatus({ day, minutes }) {
+    const [open, close] = HOURS[day], [, yClose] = HOURS[(day + 6) % 7];
+    if (yClose > 1440 && minutes < yClose - 1440) return { open: true, text: t("status.closes", { time: clock(yClose) }) };
+    if (minutes >= open && minutes < close) return { open: true, text: t("status.closes", { time: clock(close) }) };
+    if (minutes < open) return { open: false, text: t("status.opensToday", { time: clock(open) }) };
+    return { open: false, text: t("status.opensTomorrow", { time: clock(HOURS[(day + 1) % 7][0]) }) };
+  }
+  function renderStatus() {
+    const s = openStatus(melbourneNow());
+    $("status").dataset.open = String(s.open);
+    $("status-text").textContent = s.text;
+  }
+
+  /* ================= add to order ================= */
+  let toastTimer;
+  function addToOrder() {
+    const from = $("pizza-svg").getBoundingClientRect(), to = $("cart-btn").getBoundingClientRect();
+    const fly = document.createElement("div");
+    fly.className = "fly";
+    document.body.appendChild(fly);
+    const sx = from.left + from.width / 2 - 32, sy = from.top + from.height / 2 - 32;
+    const ex = to.right - 30, ey = to.top + to.height / 2 - 32;
+    anim(fly, [
+      { transform: `translate(${sx}px,${sy}px) scale(2.2)`, opacity: .95 },
+      { transform: `translate(${(sx + ex) / 2}px,${Math.min(sy, ey) - 80}px) scale(1.1)`, opacity: 1, offset: .55 },
+      { transform: `translate(${ex}px,${ey}px) scale(.25)`, opacity: .6 },
+    ], { duration: 750, easing: "cubic-bezier(.5,0,.3,1)" }).finished.then(() => {
+      fly.remove();
+      state.cart += 1;
+      $("cart-count").textContent = state.cart;
+      const btn = $("cart-btn");
+      btn.classList.remove("bump"); void btn.offsetWidth; btn.classList.add("bump");
+    });
+    const name = state.rightId ? `${pizzaName(state.pizzaId)} / ${pizzaName(state.rightId)}` : pizzaName(state.pizzaId);
+    const toast = $("toast");
+    toast.textContent = t("toast.added", { size: t(`size.${size().id}`), name, price: formatPrice(totalCents()) });
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
+  }
+
+  /* ================= events ================= */
+  $("menu-list").addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-pizza]");
+    if (!btn || btn.dataset.pizza === state.pizzaId) return;
+    state.pizzaId = btn.dataset.pizza;
+    if (state.rightId === state.pizzaId) state.rightId = Object.keys(PIZZAS).find((id) => id !== state.pizzaId);
+    state.removed.clear();
+    renderAll({ rebuild: true });
+  });
+  document.querySelector(".panel").addEventListener("click", (e) => {
+    const b = e.target.closest("button");
+    if (!b) return;
+    const toggle = (set, id) => (set.has(id) ? set.delete(id) : set.add(id));
+    if (b.dataset.size) { state.sizeId = b.dataset.size; renderAll(); }
+    else if (b.dataset.base) { state.baseId = b.dataset.base; renderAll(); }
+    else if (b.dataset.remove) { toggle(state.removed, b.dataset.remove); renderAll(); }
+    else if (b.dataset.extra) { toggle(state.extras, b.dataset.extra); renderAll(); }
+    else if (b.id === "half-switch") {
+      state.rightId = state.rightId ? null : Object.keys(PIZZAS).find((id) => id !== state.pizzaId && id !== "margarita") || null;
+      state.removed.clear();
+      renderAll({ rebuild: true });
+    } else if (b.id === "add") addToOrder();
+  });
+  $("half-select").addEventListener("change", (e) => { state.rightId = e.target.value; state.removed.clear(); renderAll({ rebuild: true }); });
+  $("theme-btn").addEventListener("click", () => setTheme(THEMES[(THEMES.indexOf($("theme-btn").dataset.mode) + 1) % THEMES.length]));
+  $("lang").addEventListener("change", (e) => { locale = e.target.value; boot(); });
+
+  /* ================= boot ================= */
+  function boot() {
+    applyStaticText();
+    $("lang").innerHTML = Object.entries(LOCALES).map(([id, l]) => `<option value="${id}" ${id === locale ? "selected" : ""}>${l.label}</option>`).join("");
+    setTheme(readTheme());
+    renderMenu();
+    renderStatus();
+    renderAll({ rebuild: true });
+  }
+  paintStatic();
+  boot();
+  setInterval(renderStatus, 60000);
+})();
+</script>
