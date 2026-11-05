@@ -30,15 +30,15 @@ const piece = (count: number, gap: number, draw: (rand: Rand) => string): PieceT
 export const TOPPINGS: Record<string, Topping> = {
   pepperoni: piece(15, 44, (r) => {
     const R = 19 + r() * 3;
-    return `<circle r="${R + 4}" fill="url(#gGrease)"/><path d="${blob(r, R, 0.08, 12)}" fill="url(#gPep)"/><circle r="${f1(R * 0.74)}" fill="none" stroke="#e0593b" stroke-width="1.4" opacity=".45"/>${specks(r, 7, R - 6, "#f19a78", 1, 2.6, 0.5)}${specks(r, 5, R - 2, "#2a0703", 0.6, 1.4, 0.55)}${glint(-R * 0.28, -R * 0.32, R * 0.32, R * 0.16)}`;
+    return `<circle r="${R + 4}" fill="url(#gGrease)"/><path d="${blob(r, R, 0.08, 12)}" fill="url(#gPep)"/><path d="${blob(r, R - 0.6, 0.08, 12)}" fill="none" stroke="#3a0a03" stroke-width="2" opacity=".55"/>${specks(r, 6, R - 6, "#e9876a", 0.8, 2, 0.35)}${specks(r, 6, R - 2, "#2a0703", 0.6, 1.4, 0.5)}${glint(-R * 0.28, -R * 0.32, R * 0.32, R * 0.16)}`;
   }),
   salami: piece(9, 40, (r) => {
     const R = 16 + r() * 3;
-    return `<circle r="${R + 3}" fill="url(#gGrease)" opacity=".7"/><path d="${blob(r, R, 0.1, 11)}" fill="url(#gSal)"/>${specks(r, 10, R - 3, "#f4cdbd", 0.9, 2.4, 0.85)}${specks(r, 5, R - 3, "#1b0304", 0.7, 1.5, 0.6)}${glint(-R * 0.3, -R * 0.3, R * 0.3, R * 0.14, 0.16)}`;
+    return `<circle r="${R + 3}" fill="url(#gGrease)" opacity=".7"/><path d="${blob(r, R, 0.1, 11)}" fill="url(#gSal)"/>${specks(r, 10, R - 3, "#eab3a2", 0.8, 2, 0.6)}${specks(r, 5, R - 3, "#1b0304", 0.7, 1.5, 0.6)}${glint(-R * 0.3, -R * 0.3, R * 0.3, R * 0.14, 0.16)}`;
   }),
   ham: piece(10, 34, (r) => {
     const d = blob(r, 14, 0.45, 7);
-    return `<path d="${d}" fill="url(#gHam)"/><path d="${d}" fill="none" stroke="#fbd9d1" stroke-width="2.2" opacity=".75"/><path d="M-7 -2 Q0 -6 7 0" stroke="#f9d3ca" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".7"/>`;
+    return `<path d="${d}" fill="url(#gHam)"/><path d="${d}" fill="none" stroke="#b9675a" stroke-width="1.4" opacity=".55"/><path d="M-7 -2 Q0 -6 7 0" stroke="#f9d3ca" stroke-width="1.4" fill="none" stroke-linecap="round" opacity=".45"/>`;
   }),
   bacon: piece(9, 34, (r) => {
     const w = 16 + r() * 4;
@@ -49,7 +49,7 @@ export const TOPPINGS: Record<string, Topping> = {
     9,
     34,
     (r) =>
-      `<g transform="scale(${f1(0.9 + r() * 0.2)})"><path d="M-17 3 C-18 -16 18 -16 17 3 Q0 6 -17 3Z" fill="url(#gMush)" stroke="#8d6741" stroke-width="1.8"/><path d="M-6 3 L-5 14 Q0 17 5 14 L6 3" fill="url(#gMush)" stroke="#8d6741" stroke-width="1.6"/><path d="M-12 0 Q-9 -6 -7 -9 M-5 1 L-3 -11 M2 1 L2 -11 M8 0 L7 -9 M13 0 Q11 -5 10 -7" stroke="#b08c66" stroke-width="1" stroke-linecap="round" opacity=".8"/><path d="M-14 -4 C-12 -12 -4 -14 2 -13" stroke="#fff" stroke-width="1.6" fill="none" opacity=".35" stroke-linecap="round"/></g>`,
+      `<g transform="scale(${f1(0.9 + r() * 0.2)})"><path d="M-17 3 C-18 -16 18 -16 17 3 Q0 6 -17 3Z" fill="url(#gMush)" stroke="#6e4b2c" stroke-width="1.1" stroke-opacity=".7"/><path d="M-6 3 L-5 14 Q0 17 5 14 L6 3" fill="url(#gMush)" stroke="#6e4b2c" stroke-width="1" stroke-opacity=".7"/><path d="M-12 0 Q-9 -6 -7 -9 M-5 1 L-3 -11 M2 1 L2 -11 M8 0 L7 -9 M13 0 Q11 -5 10 -7" stroke="#9a7754" stroke-width=".8" stroke-linecap="round" opacity=".55"/><path d="M-14 -4 C-12 -12 -4 -14 2 -13" stroke="#fff" stroke-width="1.6" fill="none" opacity=".35" stroke-linecap="round"/></g>`,
   ),
   capsicum: piece(9, 30, (r) => {
     const w = 12 + r() * 5;

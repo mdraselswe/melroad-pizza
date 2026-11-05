@@ -1,6 +1,6 @@
 import { hashString, seededRandom } from "@/lib/rng";
 import { piecesFor } from "./layout";
-import { baseMarkup, HERBS_MARKUP, piecesMarkup, type BaseId } from "./markup";
+import { baseMarkup, HERBS_MARKUP, LIGHT_MARKUP, piecesMarkup, type BaseId } from "./markup";
 import { PAINT_DEFS, type SauceId } from "./paint-defs";
 import { TOPPINGS } from "./toppings";
 
@@ -91,7 +91,10 @@ export interface PizzaArtSpec {
 export function pizzaImage(art: PizzaArtSpec, px: number, { urgent = false } = {}): Promise<string> {
   const pieces = piecesFor({ halves: [{ side: "F", id: art.id, toppings: art.toppings }] });
   const inner =
-    baseMarkup({ sauce: art.sauce, cheese: art.cheese }) + piecesMarkup(pieces) + `<g>${HERBS_MARKUP}</g>`;
+    baseMarkup({ sauce: art.sauce, cheese: art.cheese }) +
+    piecesMarkup(pieces) +
+    `<g>${HERBS_MARKUP}</g>` +
+    LIGHT_MARKUP;
   return rasterize(
     `pizza:${art.id}:${art.sauce}:${art.toppings.join(",")}:${px}`,
     "-212 -212 424 424",
