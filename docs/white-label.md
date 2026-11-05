@@ -21,6 +21,7 @@ Everything that changes between restaurants lives in one folder: `src/tenants/<i
    | `loyalty`  | Turn rewards on/off, points per dollar, reward threshold and value. Off hides the Rewards link                                                                       |
    | `theme`    | Three gradient colours, the accent for light and dark mode, and `defaultMode` (system, light or dark)                                                                |
    | `seo`      | Site URL, title, description, keywords                                                                                                                               |
+   | `pwa`      | Installable app on/off and `promptDelaySeconds` before the install card appears                                                                                      |
    | `demo`     | Shows the "demo" notices                                                                                                                                             |
    | `content`  | Hero headline (`[word]` is styled as the accent), hero text, ring text, stats, About section                                                                         |
 3. Edit `menu.ts`: categories, items (pizzas need `art` so they can be drawn), option groups, tags and deals. Deal slots say which categories or items each pick comes from.

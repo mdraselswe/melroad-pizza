@@ -2,6 +2,7 @@ import Link from "next/link";
 import { tenant } from "@/config/tenant";
 import { NAV_LINKS } from "@/constants/nav";
 import { ROUTES } from "@/constants/routes";
+import { InstallLink } from "@/features/pwa";
 import { SocialLinks } from "@/features/visit";
 import { t } from "@/i18n";
 import { groupHours } from "@/lib/hours";
@@ -65,9 +66,17 @@ export function SiteFooter() {
           © {new Date().getFullYear()} {brand.fullName}
         </span>
         {tenant.demo.enabled ? <span>{t("footer.demo", { name: brand.fullName })}</span> : null}
-        <Link href={ROUTES.credits} className="text-muted underline-offset-4 hover:text-ink hover:underline">
-          {t("footer.credits")}
-        </Link>
+        <span className="flex flex-wrap items-center gap-5">
+          {tenant.pwa.enabled ? (
+            <InstallLink className="cursor-pointer text-muted underline-offset-4 hover:text-ink hover:underline" />
+          ) : null}
+          <Link
+            href={ROUTES.credits}
+            className="text-muted underline-offset-4 hover:text-ink hover:underline"
+          >
+            {t("footer.credits")}
+          </Link>
+        </span>
       </div>
     </footer>
   );

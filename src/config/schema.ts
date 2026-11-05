@@ -127,6 +127,14 @@ export const TenantSchema = z.object({
     description: z.string(),
     keywords: z.array(z.string()),
   }),
+  /** Installable app: offline support and the "install the app" prompt. */
+  pwa: z
+    .object({
+      enabled: z.boolean().default(true),
+      /** Seconds on the site before the install instructions pop up (once per 14 days). */
+      promptDelaySeconds: z.number().int().nonnegative().default(25),
+    })
+    .default({ enabled: true, promptDelaySeconds: 25 }),
   demo: z.object({ enabled: z.boolean() }),
   content: z.record(z.string(), ContentSchema),
 });

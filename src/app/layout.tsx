@@ -4,10 +4,11 @@ import type { CSSProperties, ReactNode } from "react";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ThemeScript } from "@/components/layout/theme-script";
-import { themeAttr, type ThemeMode } from "@/constants/theme";
+import { THEME_BG, themeAttr, type ThemeMode } from "@/constants/theme";
 import { tenant } from "@/config/tenant";
 import { CartDrawer, CartHydrator, Toaster } from "@/features/cart";
 import { PaintDefs } from "@/features/pizza-art";
+import { InstallCard, OfflineBanner, PwaScript } from "@/features/pwa";
 import { locale, t } from "@/i18n";
 import { restaurantJsonLd } from "@/lib/seo";
 import "./globals.css";
@@ -36,15 +37,26 @@ export const metadata: Metadata = {
   },
   twitter: { card: "summary_large_image", title: tenant.seo.title, description: tenant.seo.description },
   formatDetection: { telephone: false },
-  icons: { icon: { url: "/icon.svg", type: "image/svg+xml" } },
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
+  appleWebApp: {
+    capable: true,
+    title: tenant.brand.name,
+    statusBarStyle: tenant.theme.defaultMode === "dark" ? "black-translucent" : "default",
+  },
 };
 
 const THEME_COLOR: Record<ThemeMode, Viewport["themeColor"]> = {
-  light: "#faf7f3",
-  dark: "#0a0807",
+  light: THEME_BG.light,
+  dark: THEME_BG.dark,
   system: [
-    { media: "(prefers-color-scheme: light)", color: "#faf7f3" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0807" },
+    { media: "(prefers-color-scheme: light)", color: THEME_BG.light },
+    { media: "(prefers-color-scheme: dark)", color: THEME_BG.dark },
   ],
 };
 
@@ -74,6 +86,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     >
       <head>
         <ThemeScript />
+        {tenant.pwa.enabled ? <PwaScript serviceWorker={process.env.NODE_ENV === "production"} /> : null}
       </head>
       <body>
         <a
@@ -90,6 +103,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <CartDrawer />
         <Toaster />
         <CartHydrator />
+        {tenant.pwa.enabled ? (
+          <>
+            <OfflineBanner />
+            <InstallCard />
+          </>
+        ) : null}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(restaurantJsonLd()).replace(/</g, "\\u003c") }}

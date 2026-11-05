@@ -8,4 +8,5 @@ export const STORAGE_KEYS = {
   cart: ns("cart"),
   orders: ns("orders"),
   messages: ns("messages"),
+  installDismissed: ns("install-dismissed"),
 } as const;

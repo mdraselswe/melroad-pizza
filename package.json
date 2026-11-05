@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "node scripts/fix-export-segments.mjs",
+    "postbuild": "node scripts/fix-export-segments.mjs && node scripts/build-sw.mjs",
     "start": "npx serve out",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

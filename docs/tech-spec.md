@@ -59,6 +59,16 @@ The ESLint rule `no-restricted-imports` blocks deep imports into another feature
 - `src/app/loading.tsx` is the fallback if a link is clicked before its page has arrived: a skeleton shaped like `PageShell` plus a card grid, so content replaces it without a jump.
 - Client-only parts (cart, clock, open status, map) reserve their space and show a `.skeleton` placeholder until ready. Layout shift is 0 on every page.
 
+## Installable app (PWA) and offline
+
+- `app/manifest.ts` builds the manifest from the tenant: name, colours (the default theme's background), shortcuts and icons.
+- Icons are PNGs drawn from the tenant gradient at build time (`features/pwa/app-icon.tsx`, routes `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`, `apple-touch-icon.png`).
+- `scripts/build-sw.mjs` runs after `next build` and writes `out/sw.js` from `scripts/sw.template.js`, precaching every exported file (pages, router payloads, JS, CSS, fonts, images). The cache name is a hash of the build, so each deploy replaces the old cache.
+- Strategies: pages are network-first with a 3.5s timeout, then the cached copy; hashed assets and images are cache-first; router `.txt` payloads are stale-while-revalidate. Cross-origin requests (the map) are not cached.
+- `PwaScript` registers the worker in production and catches `beforeinstallprompt` before hydration. `InstallCard` pops up after `pwa.promptDelaySeconds` (then snoozes 14 days) and shows the native prompt or step-by-step instructions for iOS, Android, desktop Chromium and macOS Safari (`features/pwa/platform.ts`). The footer has an "Install the app" link.
+- `OfflineBanner` shows while the device is offline. Orders already work offline because the demo stores them on the device.
+- `vercel.json` serves `sw.js` and the manifest with `max-age=0` so updates are picked up.
+
 ## Pizza art
 
 - `pizza-art/toppings.ts` defines each topping as SVG pieces or drizzles. `layout.ts` scatters them with a seeded RNG, so a pizza always looks the same and adding an extra doesn't reshuffle the others.
@@ -83,8 +93,8 @@ Skip link, landmark structure, one `h1` per page, labelled radio groups and swit
 
 ## Testing
 
-- Unit tests sit next to the code (`*.test.ts`): pricing, hours, slots, tenant validation, i18n, builder reducer, deal picks, item options, menu search, checkout schema, order service, contact messages, maps helper, reward progress.
-- E2E (`tests/e2e`) runs on the production export in desktop Chrome and a Pixel 7 profile: browsing, search, 404, theme, contact form, builder, options sheet, deal configurator, checkout validation, placing and tracking an order.
+- Unit tests sit next to the code (`*.test.ts`): pricing, hours, slots, tenant validation, i18n, builder reducer, deal picks, item options, menu search, checkout schema, order service, contact messages, install platform, maps helper, reward progress.
+- E2E (`tests/e2e`) runs on the production export in desktop Chrome and a Pixel 7 profile: browsing, search, 404, theme, contact form, manifest and icons, offline, install card, builder, options sheet, deal configurator, checkout validation, placing and tracking an order.
 - CI runs typecheck, lint, format check, unit tests, both tenant builds and e2e on every push.
 
 ## Out of scope for the demo
