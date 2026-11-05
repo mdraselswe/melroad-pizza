@@ -8,6 +8,8 @@ import { z } from "zod";
 
 const cents = z.number().int().nonnegative();
 const time = z.string().regex(/^\d{2}:\d{2}$/, "Use 24h HH:MM");
+export const SOCIAL_KINDS = ["facebook", "instagram", "tiktok", "x", "youtube", "website"] as const;
+
 const hexColor = z.string().regex(/^#[0-9a-f]{6}$/i);
 
 /** One opening window. A close earlier than the open time runs past midnight. */
@@ -58,8 +60,18 @@ export const TenantSchema = z.object({
       country: z.string(),
     }),
     mapsUrl: z.string().url(),
+    /** Embeddable map URL. Defaults to a Google Maps embed of the address. */
+    mapEmbedUrl: z.string().url().optional(),
     geo: z.object({ lat: z.number(), lng: z.number() }),
-    socials: z.array(z.object({ label: z.string(), url: z.string().url() })),
+    socials: z.array(
+      z.object({
+        kind: z.enum(SOCIAL_KINDS).default("website"),
+        label: z.string(),
+        url: z.string().url(),
+      }),
+    ),
+    /** Show the "send us a message" form on the visit page. */
+    contactForm: z.boolean().default(true),
   }),
   locale: z.object({
     default: z.string(),
@@ -122,5 +134,6 @@ export type TenantContent = z.infer<typeof ContentSchema>;
 export type OpeningWindow = z.infer<typeof OpeningWindowSchema>;
 export type PizzaSize = z.infer<typeof PizzaSizeSchema>;
 export type PizzaBase = z.infer<typeof PizzaBaseSchema>;
+export type SocialKind = (typeof SOCIAL_KINDS)[number];
 export type ToppingExtra = z.infer<typeof ToppingExtraSchema>;
 export type TenantInput = z.input<typeof TenantSchema>;

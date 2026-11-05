@@ -26,7 +26,7 @@ export const melroadConfig = {
     },
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=422+Melbourne+Road+Newport+VIC+3015",
     geo: { lat: -37.8436, lng: 144.8833 },
-    socials: [],
+    socials: [{ kind: "facebook", label: "Facebook", url: "https://www.facebook.com/melroadpizzankebab/" }],
   },
   locale: {
     default: "en",

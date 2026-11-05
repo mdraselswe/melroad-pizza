@@ -11,6 +11,7 @@ export function restaurantJsonLd() {
     description: brand.description,
     url: seo.siteUrl,
     telephone: contact.phoneE164,
+    ...(contact.socials.length ? { sameAs: contact.socials.map((s) => s.url) } : {}),
     servesCuisine: ["Pizza", "Kebab", "Italian"],
     priceRange: "$$",
     hasMenu: `${seo.siteUrl}/menu/`,

@@ -1,5 +1,7 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Gift } from "lucide-react";
+import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
+import { RichText } from "@/components/ui/rich-text";
 import { content, tenant } from "@/config/tenant";
 import { ROUTES } from "@/constants/routes";
 import { t } from "@/i18n";
@@ -37,18 +39,35 @@ export function Hero() {
             {content.heroLede}
           </p>
           <div className="mt-[30px] flex animate-[rise_.9s_.85s_var(--ease-out-soft)_both] flex-wrap gap-3">
-            <ButtonLink href={ROUTES.build} size="lg" className="group">
+            <ButtonLink href={ROUTES.menu} size="lg" className="group">
               {t("hero.cta")}
               <ArrowRight
                 className="size-[18px] transition-transform group-hover:translate-x-[3px]"
                 aria-hidden="true"
               />
             </ButtonLink>
-            <ButtonLink href={ROUTES.deals} variant="ghost" size="lg">
+            <ButtonLink href={ROUTES.build} variant="ghost" size="lg">
               {t("hero.cta2")}
             </ButtonLink>
           </div>
-          <dl className="mt-11 flex animate-[rise_.9s_1s_var(--ease-out-soft)_both] flex-wrap gap-7 max-sm:gap-5">
+          {tenant.loyalty.enabled ? (
+            <Link
+              href={ROUTES.rewards}
+              className="glass group mt-4 inline-flex w-fit animate-[rise_.9s_.95s_var(--ease-out-soft)_both] items-center gap-2.5 rounded-full py-2 pr-4 pl-2 text-[15px] font-medium text-ink no-underline transition-colors hover:bg-faint"
+            >
+              <span className="grid size-8 place-items-center rounded-full bg-accent text-on-accent">
+                <Gift className="size-4" aria-hidden="true" />
+              </span>
+              <span>
+                <RichText text={t("hero.loyalty", { rate: tenant.loyalty.pointsPerDollar })} />
+              </span>
+              <ArrowRight
+                className="size-4 text-accent transition-transform group-hover:translate-x-0.5"
+                aria-hidden="true"
+              />
+            </Link>
+          ) : null}
+          <dl className="mt-10 flex animate-[rise_.9s_1s_var(--ease-out-soft)_both] flex-wrap gap-7 max-sm:gap-5">
             {content.stats.map((s) => (
               <div key={s.label} className="flex flex-col-reverse">
                 <dt className="text-[13.5px] text-muted">{s.label}</dt>

@@ -23,6 +23,7 @@ export const basilBrickConfig = {
     address: { street: "12 Example Lane", suburb: "Fitzroy", state: "VIC", postcode: "3065", country: "AU" },
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=Fitzroy+VIC+3065",
     geo: { lat: -37.7987, lng: 144.9784 },
+    socials: [{ kind: "instagram", label: "Instagram", url: "https://www.instagram.com/" }],
   },
   hours: [
     [{ open: "12:00", close: "21:00" }],

@@ -7,4 +7,5 @@ export const STORAGE_KEYS = {
   theme: ns("theme"),
   cart: ns("cart"),
   orders: ns("orders"),
+  messages: ns("messages"),
 } as const;

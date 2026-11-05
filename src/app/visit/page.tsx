@@ -3,9 +3,10 @@ import type { ReactNode } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { ButtonLink } from "@/components/ui/button";
 import { RichText } from "@/components/ui/rich-text";
+import { SectionHeading } from "@/components/ui/section-heading";
 import { content, tenant } from "@/config/tenant";
 import { ROUTES } from "@/constants/routes";
-import { HoursTable } from "@/features/visit";
+import { ContactForm, HoursTable, LocationMap, SocialLinks } from "@/features/visit";
 import { t } from "@/i18n";
 import { money } from "@/lib/format";
 import { pageMetadata } from "@/lib/metadata";
@@ -79,6 +80,12 @@ export default function VisitPage() {
           <ButtonLink href={`tel:${contact.phoneE164}`} variant="ghost" className="w-fit">
             {t("visit.call")}
           </ButtonLink>
+          {contact.socials.length ? (
+            <div className="grid gap-2 border-t border-line pt-4">
+              <span className="text-[13.5px] font-semibold text-muted">{t("visit.follow")}</span>
+              <SocialLinks />
+            </div>
+          ) : null}
         </Card>
 
         {delivery.enabled ? (
@@ -101,7 +108,26 @@ export default function VisitPage() {
         ) : null}
       </div>
 
-      <section className="mt-16 grid max-w-[720px] gap-4">
+      <LocationMap className="mt-4 h-[420px] max-md:h-[340px]" />
+
+      {contact.contactForm ? (
+        <section
+          id="contact"
+          className="mt-20 grid scroll-mt-28 gap-8 lg:grid-cols-[minmax(0,.9fr)_minmax(0,1.1fr)]"
+        >
+          <SectionHeading
+            kicker={t("contact.kicker")}
+            title={t("contact.title")}
+            sub={t("contact.sub")}
+            className="mb-0 content-start"
+          />
+          <div className="glass rounded-[var(--radius-panel)] p-[24px] max-sm:p-5">
+            <ContactForm />
+          </div>
+        </section>
+      ) : null}
+
+      <section className="mt-20 grid max-w-[720px] gap-4">
         <span className="text-[13px] font-semibold tracking-[.14em] text-accent uppercase">
           {t("about.kicker")}
         </span>

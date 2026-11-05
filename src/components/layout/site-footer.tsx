@@ -2,12 +2,14 @@ import Link from "next/link";
 import { tenant } from "@/config/tenant";
 import { NAV_LINKS } from "@/constants/nav";
 import { ROUTES } from "@/constants/routes";
+import { SocialLinks } from "@/features/visit";
 import { t } from "@/i18n";
 import { groupHours } from "@/lib/hours";
+import { addressLine } from "@/lib/maps";
 import { BrandMark } from "./brand-mark";
 
 const { contact, brand } = tenant;
-const address = `${contact.address.street}, ${contact.address.suburb} ${contact.address.state} ${contact.address.postcode}`;
+const address = addressLine(contact);
 
 export function SiteFooter() {
   return (
@@ -16,6 +18,7 @@ export function SiteFooter() {
         <div className="grid content-start gap-3">
           <BrandMark />
           <p className="m-0 max-w-[36ch]">{brand.description}</p>
+          <SocialLinks className="mt-1" />
         </div>
         <div className="grid content-start gap-2">
           <h2 className="m-0 mb-1 text-[13px] font-semibold tracking-[.14em] text-ink uppercase">
@@ -34,7 +37,7 @@ export function SiteFooter() {
           <a
             href={contact.mapsUrl}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             className="w-fit text-muted no-underline hover:text-ink"
           >
             {address}

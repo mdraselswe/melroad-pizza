@@ -7,6 +7,26 @@ test.describe("browsing", () => {
     await expect(page.getByRole("button", { name: /Build this deal/ }).first()).toBeVisible();
     await expect(page.locator("#studio")).toBeAttached();
     await expect(page.locator('script[type="application/ld+json"]')).toBeAttached();
+    await expect(page.getByRole("link", { name: "Order now" })).toHaveAttribute("href", "/menu/");
+    await expect(page.getByRole("link", { name: /points per \$1/ })).toHaveAttribute("href", "/rewards/");
+    const about = page.locator("#about");
+    await expect(about.getByRole("heading", { level: 2 })).toContainText("Melbourne Road");
+    await expect(about.locator("iframe")).toHaveCount(0); // map waits until scrolled near
+    await about.scrollIntoViewIfNeeded();
+    await expect(about.locator("iframe")).toHaveAttribute("src", /google\.com\/maps/);
+    await expect(about.getByRole("link", { name: /on Facebook/ })).toHaveAttribute("href", /facebook\.com/);
+  });
+
+  test("visit page sends a contact message", async ({ page }) => {
+    await page.goto("/visit/#contact");
+    const form = page.locator("#contact");
+    await form.getByRole("button", { name: "Send message" }).click();
+    await expect(form.getByText("Please enter your name")).toBeVisible();
+    await form.getByLabel("Name").fill("Sam");
+    await form.getByLabel("Email").fill("sam@example.com");
+    await form.getByLabel("Message").fill("Do you cater for birthday parties?");
+    await form.getByRole("button", { name: "Send message" }).click();
+    await expect(form.getByRole("status")).toContainText("Thanks, Sam!");
   });
 
   test("every main page renders its heading", async ({ page }) => {
