@@ -67,7 +67,7 @@ The ESLint rule `no-restricted-imports` blocks deep imports into another feature
 - Strategies: pages are network-first with a 3.5s timeout, then the cached copy; hashed assets and images are cache-first; router `.txt` payloads are stale-while-revalidate. Cross-origin requests (the map) are not cached.
 - `PwaScript` registers the worker in production and catches `beforeinstallprompt` before hydration. `InstallCard` pops up after `pwa.promptDelaySeconds` (then snoozes 14 days) and shows the native prompt or step-by-step instructions for iOS, Android, desktop Chromium and macOS Safari (`features/pwa/platform.ts`). The footer has an "Install the app" link.
 - `OfflineBanner` shows while the device is offline. Orders already work offline because the demo stores them on the device.
-- `vercel.json` serves `sw.js` and the manifest with `max-age=0` so updates are picked up.
+- `vercel.json` deploys `out/` as plain static files (so the generated `sw.js` ships) and serves `sw.js` and the manifest with `max-age=0` so updates are picked up.
 
 ## Pizza art
 

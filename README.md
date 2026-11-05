@@ -29,7 +29,7 @@ npm run dev          # http://localhost:3000
 
 The site is plain static files in `out/`.
 
-**Vercel:** import the GitHub repo. The framework preset (Next.js) and `npm run build` are detected automatically; nothing else to set. To deploy another restaurant, set the environment variable `NEXT_PUBLIC_TENANT` (for example `basil-brick`).
+**Vercel:** import the GitHub repo; `vercel.json` sets the build (`npm run build`) and serves `out/` as static files, so nothing else to set. To deploy another restaurant, set the environment variable `NEXT_PUBLIC_TENANT` (for example `basil-brick`).
 
 Any static host (Netlify, Cloudflare Pages, S3) works too: build command `npm run build`, output folder `out`.
 
