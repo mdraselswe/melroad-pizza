@@ -102,6 +102,7 @@ export const melroadConfig = {
     gradient: ["#ff7a1a", "#f2361f", "#ffb23f"],
     accentLight: "#e8431c",
     accentDark: "#ff5a1f",
+    defaultMode: "dark",
   },
   seo: {
     siteUrl: "https://pizza.shojashapta.com",

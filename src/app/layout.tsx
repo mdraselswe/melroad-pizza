@@ -4,6 +4,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ThemeScript } from "@/components/layout/theme-script";
+import { themeAttr, type ThemeMode } from "@/constants/theme";
 import { tenant } from "@/config/tenant";
 import { CartDrawer, CartHydrator, Toaster } from "@/features/cart";
 import { PaintDefs } from "@/features/pizza-art";
@@ -38,11 +39,17 @@ export const metadata: Metadata = {
   icons: { icon: { url: "/icon.svg", type: "image/svg+xml" } },
 };
 
-export const viewport: Viewport = {
-  themeColor: [
+const THEME_COLOR: Record<ThemeMode, Viewport["themeColor"]> = {
+  light: "#faf7f3",
+  dark: "#0a0807",
+  system: [
     { media: "(prefers-color-scheme: light)", color: "#faf7f3" },
     { media: "(prefers-color-scheme: dark)", color: "#0a0807" },
   ],
+};
+
+export const viewport: Viewport = {
+  themeColor: THEME_COLOR[tenant.theme.defaultMode],
   viewportFit: "cover",
 };
 
@@ -61,6 +68,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       lang={locale}
       dir="ltr"
       suppressHydrationWarning
+      data-theme={themeAttr(tenant.theme.defaultMode)}
       className={`${geist.variable} ${instrument.variable}`}
       style={themeVars}
     >

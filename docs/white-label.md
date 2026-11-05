@@ -19,7 +19,7 @@ Everything that changes between restaurants lives in one folder: `src/tenants/<i
    | `ordering` | Order reference prefix, slot length, prep times, half & half fee, delivery fee, free-delivery threshold, minimum order, delivery postcodes                           |
    | `pizza`    | Sizes (inches + visual scale), crusts (+ price), extra toppings (+ price and art)                                                                                    |
    | `loyalty`  | Turn rewards on/off, points per dollar, reward threshold and value. Off hides the Rewards link                                                                       |
-   | `theme`    | Three gradient colours and the accent for light and dark mode                                                                                                        |
+   | `theme`    | Three gradient colours, the accent for light and dark mode, and `defaultMode` (system, light or dark)                                                                |
    | `seo`      | Site URL, title, description, keywords                                                                                                                               |
    | `demo`     | Shows the "demo" notices                                                                                                                                             |
    | `content`  | Hero headline (`[word]` is styled as the accent), hero text, ring text, stats, About section                                                                         |

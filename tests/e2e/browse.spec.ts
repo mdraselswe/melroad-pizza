@@ -61,12 +61,16 @@ test.describe("browsing", () => {
     await expect(page.getByRole("heading", { level: 1 })).toContainText("missing");
   });
 
-  test("theme toggle switches to dark", async ({ page }) => {
+  test("starts dark and the toggle switches to light", async ({ page }) => {
     await page.goto("/visit/");
+    const html = page.locator("html");
+    await expect(html).toHaveAttribute("data-theme", "dark");
     const toggle = page.getByRole("button", { name: /^Theme/ });
-    for (let i = 0; i < 3 && (await page.locator("html").getAttribute("data-theme")) !== "dark"; i++) {
+    for (let i = 0; i < 3 && (await html.getAttribute("data-theme")) !== "light"; i++) {
       await toggle.click();
     }
-    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+    await expect(html).toHaveAttribute("data-theme", "light");
+    await page.reload();
+    await expect(html).toHaveAttribute("data-theme", "light");
   });
 });

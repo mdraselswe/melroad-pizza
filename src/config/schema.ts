@@ -118,6 +118,8 @@ export const TenantSchema = z.object({
     gradient: z.tuple([hexColor, hexColor, hexColor]),
     accentLight: hexColor,
     accentDark: hexColor,
+    /** Theme for first-time visitors; "system" follows the device. */
+    defaultMode: z.enum(["system", "light", "dark"]).default("system"),
   }),
   seo: z.object({
     siteUrl: z.string().url(),

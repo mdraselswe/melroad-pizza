@@ -2,16 +2,19 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 import { STORAGE_KEYS } from "@/constants/storage";
+import { tenant } from "@/config/tenant";
 import { THEME_MODES, type ThemeMode } from "@/constants/theme";
+
+const DEFAULT_MODE: ThemeMode = tenant.theme.defaultMode;
 
 const listeners = new Set<() => void>();
 
 function read(): ThemeMode {
   try {
     const value = window.localStorage.getItem(STORAGE_KEYS.theme);
-    return (THEME_MODES as readonly string[]).includes(value ?? "") ? (value as ThemeMode) : "system";
+    return (THEME_MODES as readonly string[]).includes(value ?? "") ? (value as ThemeMode) : DEFAULT_MODE;
   } catch {
-    return "system";
+    return DEFAULT_MODE;
   }
 }
 
@@ -29,7 +32,7 @@ export function useTheme() {
       return () => listeners.delete(cb);
     },
     read,
-    () => "system" as ThemeMode,
+    () => DEFAULT_MODE,
   );
 
   const setMode = useCallback((next: ThemeMode) => {
