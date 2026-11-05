@@ -4,7 +4,14 @@ import { ROUTES } from "@/constants/routes";
 
 export const dynamic = "force-static";
 
-const PAGES = [ROUTES.home, ROUTES.menu, ROUTES.deals, ROUTES.build, ROUTES.rewards, ROUTES.visit];
+const PAGES = [
+  ROUTES.home,
+  ROUTES.menu,
+  ROUTES.deals,
+  ROUTES.build,
+  ...(tenant.loyalty.enabled ? [ROUTES.rewards] : []),
+  ROUTES.visit,
+];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return PAGES.map((path) => ({
