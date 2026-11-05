@@ -34,7 +34,7 @@ export function PizzaStudio({ initialPizzaId }: PizzaStudioProps) {
   };
 
   return (
-    <div className="grid items-start gap-7 max-[700px]:grid-cols-1 max-[700px]:gap-[18px] max-lg:grid-cols-[210px_minmax(0,1fr)] lg:grid-cols-[230px_minmax(0,1fr)_360px]">
+    <div className="grid items-start gap-7 max-[700px]:gap-[18px] min-[701px]:grid-cols-[210px_minmax(0,1fr)] lg:grid-cols-[230px_minmax(0,1fr)_360px]">
       <nav aria-label={t("builder.menuLabel")} className="grid min-w-0 gap-3">
         {pizzaCategories.length > 1 ? (
           <Segmented
