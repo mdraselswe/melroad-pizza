@@ -9,6 +9,14 @@ updates:
     groups:
       minor-and-patch:
         update-types: [minor, patch]
+    # Held back until peers support them; see docs/adr/0006-toolchain-versions.md.
+    ignore:
+      - dependency-name: typescript
+        versions: [">=7"]
+      - dependency-name: eslint
+        versions: [">=10"]
+      - dependency-name: "@types/node"
+        versions: [">=25"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
