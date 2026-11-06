@@ -50,7 +50,6 @@ See [docs/white-label.md](docs/white-label.md). In short: copy `src/tenants/melr
 - [White-label guide](docs/white-label.md)
 - [Design system](docs/design-system.md)
 - [Architecture decisions](docs/adr/), including held-back package versions
-- [New project playbook](docs/new-project-playbook.md): a prompt for starting the next project the same way
 
 ## Credits
 
