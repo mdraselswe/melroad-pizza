@@ -2,7 +2,8 @@
 
 A fast, animated, fully static ordering site for **Melroad Pizza n Kebab** (422 Melbourne Road, Newport VIC). It is also a **white-label template**: one config folder per restaurant, so the same code can be demoed to any pizza shop.
 
-- Next.js 16 static export (no server needed), React 19, TypeScript strict, Tailwind CSS v4
+- Next.js 16 static export (no server needed), React 19 with the React Compiler, TypeScript 6 strict, Tailwind CSS v4
+- Installable app (PWA) that works offline after the first visit
 - Pizza art drawn in code: every pizza, topping and the live builder is SVG painted to cached bitmaps
 - Menu, pizza studio (sizes, crusts, extras, half & half), deal configurator, cart, checkout, order tracking, rewards
 - Light and dark themes, i18n-ready (English today), reduced-motion aware, keyboard and screen-reader friendly
@@ -10,9 +11,12 @@ A fast, animated, fully static ordering site for **Melroad Pizza n Kebab** (422 
 
 ## Quick start
 
+Needs Node 24 (see `.nvmrc`).
+
 ```bash
 npm install
-npm run dev          # http://localhost:3000
+cp .env.example .env.local   # optional: pick a tenant
+npm run dev                  # http://localhost:3000
 ```
 
 | Script             | What it does                                                |
@@ -41,10 +45,12 @@ See [docs/white-label.md](docs/white-label.md). In short: copy `src/tenants/melr
 
 ## Docs
 
+- [Product requirements](docs/prd.md): what and why
 - [Tech spec](docs/tech-spec.md): architecture, data flow, folders, testing
 - [White-label guide](docs/white-label.md)
 - [Design system](docs/design-system.md)
-- [Architecture decisions](docs/adr/)
+- [Architecture decisions](docs/adr/), including held-back package versions
+- [New project playbook](docs/new-project-playbook.md): a prompt for starting the next project the same way
 
 ## Credits
 

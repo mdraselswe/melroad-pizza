@@ -1,6 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import { Reveal } from "@/components/effects/reveal";
-import { ButtonLink } from "@/components/ui/button";
+import { ButtonAnchor, ButtonLink } from "@/components/ui/button";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { content, tenant } from "@/config/tenant";
 import { ROUTES } from "@/constants/routes";
@@ -34,14 +34,14 @@ export function VisitSection() {
                 aria-hidden="true"
               />
             </ButtonLink>
-            <ButtonLink
+            <ButtonAnchor
               href={tenant.contact.mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
               variant="ghost"
             >
               {t("visit.directions")}
-            </ButtonLink>
+            </ButtonAnchor>
             <SocialLinks />
           </div>
         </Reveal>

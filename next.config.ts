@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   images: { unoptimized: true },
   reactStrictMode: true,
+  // Auto-memoises components and hooks, so code stays free of manual useMemo/useCallback.
+  reactCompiler: true,
+  // Links and router.push are checked against the real routes at type-check time.
+  typedRoutes: true,
   poweredByHeader: false,
 };
 

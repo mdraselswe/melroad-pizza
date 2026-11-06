@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { tenant } from "@/config/tenant";
-import { ROUTES } from "@/constants/routes";
+import { pageUrl, ROUTES } from "@/constants/routes";
 
 export const dynamic = "force-static";
 
@@ -15,7 +15,7 @@ const PAGES = [
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return PAGES.map((path) => ({
-    url: new URL(path, tenant.seo.siteUrl).toString(),
+    url: new URL(pageUrl(path), tenant.seo.siteUrl).toString(),
     changeFrequency: "weekly",
     priority: path === ROUTES.home ? 1 : 0.7,
   }));

@@ -34,7 +34,7 @@ export function CategoryShowcase() {
             <li key={c.id}>
               <Reveal delay={Math.min(i, 6) * 60}>
                 <Link
-                  href={`${ROUTES.menu}#cat-${c.id}`}
+                  href={`${ROUTES.menu}#cat-${c.id}` as const}
                   className="group relative isolate flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-[var(--radius-card)] p-5 text-white no-underline"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element -- static export */}

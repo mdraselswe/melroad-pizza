@@ -1,7 +1,7 @@
 import { Bike, Clock, MapPin, Phone } from "lucide-react";
 import type { ReactNode } from "react";
 import { PageShell } from "@/components/layout/page-shell";
-import { ButtonLink } from "@/components/ui/button";
+import { ButtonAnchor } from "@/components/ui/button";
 import { RichText } from "@/components/ui/rich-text";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { content, tenant } from "@/config/tenant";
@@ -59,7 +59,7 @@ export default function VisitPage() {
             <br />
             {address.suburb} {address.state} {address.postcode}
           </address>
-          <ButtonLink
+          <ButtonAnchor
             href={contact.mapsUrl}
             target="_blank"
             rel="noopener noreferrer"
@@ -67,7 +67,7 @@ export default function VisitPage() {
             className="w-fit"
           >
             {t("visit.directions")}
-          </ButtonLink>
+          </ButtonAnchor>
         </Card>
 
         <Card icon={<Phone className="size-[18px]" aria-hidden="true" />} title={t("visit.phone")}>
@@ -77,9 +77,9 @@ export default function VisitPage() {
           >
             {contact.phone}
           </a>
-          <ButtonLink href={`tel:${contact.phoneE164}`} variant="ghost" className="w-fit">
+          <ButtonAnchor href={`tel:${contact.phoneE164}`} variant="ghost" className="w-fit">
             {t("visit.call")}
-          </ButtonLink>
+          </ButtonAnchor>
           {contact.socials.length ? (
             <div className="grid gap-2 border-t border-line pt-4">
               <span className="text-[13.5px] font-semibold text-muted">{t("visit.follow")}</span>

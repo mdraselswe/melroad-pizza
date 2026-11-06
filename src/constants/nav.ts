@@ -1,8 +1,9 @@
+import type { Route } from "next";
 import type { MessageKey } from "@/i18n";
 import { ROUTES } from "./routes";
 
 export interface NavLink {
-  href: string;
+  href: Route;
   label: MessageKey;
   /** Only shown when the matching tenant feature is on. */
   feature?: "loyalty";

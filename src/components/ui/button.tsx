@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link, { type LinkProps } from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
@@ -47,6 +47,17 @@ export function Button({
   return <button type={type} className={buttonClass({ variant, size, className })} {...props} />;
 }
 
-export function ButtonLink({ variant, size, className, ...props }: Common & ComponentProps<typeof Link>) {
+/** Button-styled link to a page of this site (checked by `typedRoutes`). */
+export function ButtonLink<T extends string>({
+  variant,
+  size,
+  className,
+  ...props
+}: Common & LinkProps<T> & Omit<ComponentProps<"a">, keyof LinkProps<T>>) {
   return <Link className={buttonClass({ variant, size, className })} {...props} />;
+}
+
+/** Button-styled link to another site, `tel:` or `mailto:`. */
+export function ButtonAnchor({ variant, size, className, ...props }: Common & ComponentProps<"a">) {
+  return <a className={buttonClass({ variant, size, className })} {...props} />;
 }

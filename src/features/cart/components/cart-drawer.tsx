@@ -1,5 +1,6 @@
 "use client";
 
+import type { Route } from "next";
 import { ShoppingBag, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { NumberTicker } from "@/components/effects/number-ticker";
@@ -24,7 +25,7 @@ export function CartDrawer() {
   const setQuantity = useCartStore((s) => s.setQuantity);
   const remove = useCartStore((s) => s.remove);
 
-  const go = (href: string) => {
+  const go = (href: Route) => {
     setOpen(false);
     router.push(href);
   };

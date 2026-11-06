@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useReducer } from "react";
+import { useReducer } from "react";
 import { tenant } from "@/config/tenant";
 import type { MenuItem } from "@/config/menu-schema";
 import { lineSignature } from "@/features/cart";
@@ -33,18 +33,13 @@ export function usePizzaBuilder(initialPizzaId: string) {
     .map((id) => EXTRAS.find((e) => e.id === id)?.art)
     .filter((a): a is string => !!a);
 
-  const pieces = useMemo(
-    () =>
-      piecesFor({
-        halves: halvesFor(left, right),
-        removed: new Set(state.removed),
-        extras: extraArts,
-        extraPool: EXTRA_ART_POOL,
-      }),
-    // extraArts is derived from state.extras
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [left, right, state.removed, state.extras],
-  );
+  // Memoised by the React Compiler: recomputed only when the halves, removals or extras change.
+  const pieces = piecesFor({
+    halves: halvesFor(left, right),
+    removed: new Set(state.removed),
+    extras: extraArts,
+    extraPool: EXTRA_ART_POOL,
+  });
 
   const price = pizzaPrice(
     { item: left, half: right, sizeId: size.id, baseId: base.id, extras: state.extras },

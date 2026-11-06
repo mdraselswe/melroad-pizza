@@ -1,5 +1,7 @@
 # Tech spec
 
+What and why: [prd.md](prd.md). Decisions: [adr/](adr/).
+
 ## Goals
 
 - Feels instant: static HTML on a CDN, small client bundles, images painted in the browser
@@ -11,14 +13,16 @@
 
 | Concern    | Choice                                                                                         |
 | ---------- | ---------------------------------------------------------------------------------------------- |
-| Framework  | Next.js 16 App Router, `output: "export"` (static), Turbopack                                  |
-| UI         | React 19 (React Compiler lint rules), Tailwind CSS v4, Radix Dialog, lucide icons              |
+| Framework  | Next.js 16 App Router, `output: "export"` (static), Turbopack, `typedRoutes`                   |
+| UI         | React 19.3 with the React Compiler, Tailwind CSS v4, Radix Dialog, lucide icons                |
 | Motion     | CSS keyframes for most effects, `motion` for the builder's topping drops                       |
 | State      | zustand (cart, persisted per tenant; sheet open state)                                         |
 | Forms      | react-hook-form + zod                                                                          |
 | Validation | zod schemas for tenant config, menu and checkout                                               |
 | Tests      | Vitest + Testing Library (unit), Playwright desktop + mobile (e2e)                             |
+| Language   | TypeScript 6 (strict), Node 24 LTS (`.nvmrc`). Held-back majors: see ADR 6                     |
 | Quality    | ESLint (Next + React hooks + import boundaries), Prettier, husky + lint-staged, GitHub Actions |
+| Updates    | Dependabot weekly (npm grouped minor/patch, GitHub Actions)                                    |
 
 ## Folders
 
@@ -32,7 +36,7 @@ src/
   config/              zod schemas + the loaded tenant (`tenant`, `menu`, `content`)
   constants/           routes, storage keys, timings, nav, credits
   features/<name>/     one folder per feature; import only from its index.ts
-    cart  checkout  deals  hero  menu  order-tracking  pizza-art  pizza-builder  rewards  visit
+    cart  checkout  deals  hero  menu  order-tracking  pizza-art  pizza-builder  pwa  rewards  visit
   hooks/               generic hooks (now, mounted, open status, theme, scroll spy, spotlight)
   i18n/                messages + typed `t()`
   lib/                 pure helpers: money, pricing, hours, slots, menu lookups, ids, storage, seo

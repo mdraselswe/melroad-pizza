@@ -51,7 +51,7 @@ export const TenantSchema = z.object({
   contact: z.object({
     phone: z.string(),
     phoneE164: z.string(),
-    email: z.string().email().optional(),
+    email: z.email().optional(),
     address: z.object({
       street: z.string(),
       suburb: z.string(),
@@ -59,15 +59,15 @@ export const TenantSchema = z.object({
       postcode: z.string(),
       country: z.string(),
     }),
-    mapsUrl: z.string().url(),
+    mapsUrl: z.url(),
     /** Embeddable map URL. Defaults to a Google Maps embed of the address. */
-    mapEmbedUrl: z.string().url().optional(),
+    mapEmbedUrl: z.url().optional(),
     geo: z.object({ lat: z.number(), lng: z.number() }),
     socials: z.array(
       z.object({
         kind: z.enum(SOCIAL_KINDS).default("website"),
         label: z.string(),
-        url: z.string().url(),
+        url: z.url(),
       }),
     ),
     /** Show the "send us a message" form on the visit page. */
@@ -122,7 +122,7 @@ export const TenantSchema = z.object({
     defaultMode: z.enum(["system", "light", "dark"]).default("system"),
   }),
   seo: z.object({
-    siteUrl: z.string().url(),
+    siteUrl: z.url(),
     title: z.string(),
     description: z.string(),
     keywords: z.array(z.string()),

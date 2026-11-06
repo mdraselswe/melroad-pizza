@@ -80,6 +80,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       lang={locale}
       dir="ltr"
       suppressHydrationWarning
+      data-scroll-behavior="smooth"
       data-theme={themeAttr(tenant.theme.defaultMode)}
       className={`${geist.variable} ${instrument.variable}`}
       style={themeVars}

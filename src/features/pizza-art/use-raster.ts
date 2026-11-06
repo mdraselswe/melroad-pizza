@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 import { whenIdle } from "./rasterize";
 
 /**
@@ -9,12 +9,14 @@ import { whenIdle } from "./rasterize";
  */
 export function useRaster(key: string | null, make: () => Promise<string>, { idle = false } = {}) {
   const [state, setState] = useState<{ key: string | null; url: string | null }>({ key: null, url: null });
+  // `make` is derived from `key`, so only `key` should restart the work.
+  const render = useEffectEvent(make);
 
   useEffect(() => {
     if (!key) return;
     let alive = true;
     const run = () =>
-      void make().then((url) => {
+      void render().then((url) => {
         if (alive) setState({ key, url });
       });
     const cancel = idle ? whenIdle(run) : (run(), undefined);
@@ -22,8 +24,6 @@ export function useRaster(key: string | null, make: () => Promise<string>, { idl
       alive = false;
       cancel?.();
     };
-    // `make` is derived from `key`; re-running on identity changes would only repeat cached work.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, idle]);
 
   return state.key === key ? state.url : null;
